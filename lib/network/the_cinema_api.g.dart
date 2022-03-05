@@ -66,11 +66,11 @@ class _TheCinemaApi implements TheCinemaApi {
   }
 
   @override
-  Future<UserResponse> logInWithGoogle(gooleToken) async {
+  Future<UserResponse> logInWithGoogle(googleToken) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = {'access-token': gooleToken};
+    final _data = {'access-token': googleToken};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<UserResponse>(Options(
                 method: 'POST',

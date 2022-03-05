@@ -55,7 +55,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
   @override
   void initState() {
 
-    cinemaModel.getSnacksFromDatabase().then((snacksList) {
+    cinemaModel.getSnacksFromDatabase().listen((snacksList) {
       setState(() {
         snacks = snacksList;
         subTotal = widget.subTotal;
@@ -63,11 +63,11 @@ class _CheckOutPageState extends State<CheckOutPage> {
       });
     });
 
-    cinemaModel.getPaymentMethods().then((paymentMethods) {
+    cinemaModel.getPaymentMethodsFromDatabase().listen((paymentMethods) {
       setState(() {
         this.paymentMethods = paymentMethods;
       });
-    }).catchError((error) => debugPrint(error.toString()));
+    }).onError((error) => debugPrint(error.toString()));
 
     super.initState();
   }

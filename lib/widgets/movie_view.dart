@@ -48,17 +48,17 @@ class MovieView extends StatelessWidget {
         SizedBox(
           height: SIZED_BOX_HEIGHT_5,
         ),
-        Center(
-          child: Text(
-            "",
-            style: TextStyle(
-              color: LABEL_TEXT_COLOR,
-              fontSize: FONT_SIZE_12,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
+        // Center(
+        //   child: Text(
+        //     "",
+        //     style: TextStyle(
+        //       color: LABEL_TEXT_COLOR,
+        //       fontSize: FONT_SIZE_12,
+        //       fontWeight: FontWeight.bold,
+        //     ),
+        //     textAlign: TextAlign.center,
+        //   ),
+        // ),
       ],
     );
   }

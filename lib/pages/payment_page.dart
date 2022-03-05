@@ -58,12 +58,13 @@ class _PaymentPageState extends State<PaymentPage> {
   CinemaModel cinemaModel = CinemaModelImpl();
 
   _getCards() {
-    cinemaModel.getProfile().then((response) {
+
+    cinemaModel.getCardsFromDatabase().listen((event) {
       setState(() {
-        cards = response?.cards;
-        chooseCard = cards?[0];
+        cards = event;
+        //chooseCard = cards?[0];
       });
-    }).catchError((error) => debugPrint(error.toString()));
+    }).onError((error) => debugPrint(error.toString()));
   }
 
   @override
@@ -210,12 +211,8 @@ class _PaymentPageState extends State<PaymentPage> {
       MaterialPageRoute(
         builder: (context) => AddCardPage(),
       ),
-    ).then((value) {
-      print(value);
-      if (value == true) {
-        _getCards();
-      }
-    });
+    );
+
   }
 }
 

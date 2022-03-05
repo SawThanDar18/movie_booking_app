@@ -12,6 +12,14 @@ class SnacksDao {
 
   SnacksDao._internal();
 
+  Stream<void> getAllSnacksEventStream() {
+    return getSnacksBox().watch();
+  }
+
+  Stream<List<SnacksVO>> getSnacksStream() {
+    return Stream.value(getAllSnacks().toList());
+  }
+
   void saveAllSnacks(List<SnacksVO> snacksList) async {
     Map<int, SnacksVO> snackMap = Map.fromIterable(snacksList, key: (snack) => snack.id, value: (snack) => snack);
     await getSnacksBox().putAll(snackMap);

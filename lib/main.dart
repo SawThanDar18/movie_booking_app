@@ -6,6 +6,7 @@ import 'package:movie_booking_app/data/models/cinema_model.dart';
 import 'package:movie_booking_app/data/models/cinema_model_impl.dart';
 import 'package:movie_booking_app/data/vos/cinema/cinema_day_time_vo.dart';
 import 'package:movie_booking_app/data/vos/cinema/day_time_slots_vo.dart';
+import 'package:movie_booking_app/data/vos/cinema/payment_vo.dart';
 import 'package:movie_booking_app/data/vos/cinema/snacks_vo.dart';
 import 'package:movie_booking_app/data/vos/cinema/time_slots_vo.dart';
 import 'package:movie_booking_app/data/vos/movies/actor_vo.dart';
@@ -35,6 +36,7 @@ void main() async{
   Hive.registerAdapter(SpokenLanguageVOAdapter());
   Hive.registerAdapter(CardVOAdapter());
   Hive.registerAdapter(SnacksVOAdapter());
+  Hive.registerAdapter(PaymentVOAdapter());
   Hive.registerAdapter(CinemaDayTimeVOAdapter());
   Hive.registerAdapter(DayTimeSlotsVOAdapter());
   Hive.registerAdapter(TimeSlotsVOAdapter());
@@ -45,6 +47,7 @@ void main() async{
   await Hive.openBox<GenreVO>(BOX_NAME_GENRE_VO);
   await Hive.openBox<CardVO>(BOX_NAME_CARD_VO);
   await Hive.openBox<SnacksVO>(BOX_NAME_SNACKS_VO);
+  await Hive.openBox<PaymentVO>(BOX_NAME_PAYMENT_VO);
   await Hive.openBox<CinemaDayTimeVO>(BOX_NAME_CINEMA_DAY_TIME_VO);
   await Hive.openBox<DayTimeSlotsVO>(BOX_NAME_DAY_TIME_SLOTS_VO);
   await Hive.openBox<TimeSlotsVO>(BOX_NAME_TIME_SLOTS_VO);
@@ -76,17 +79,17 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
 
-    cinemaModel.getUsersFromDatabase().then((user) {
+    cinemaModel.getUsersFromDatabase().listen((user) {
       setState(() {
         userVO = user.toList().first;
       });
-    }).catchError((error) => debugPrint(error.toString()));
+    }).onError((error) => debugPrint(error.toString()));
 
-    cinemaModel.getSnacksFromDatabase().then((snacks) {
+    cinemaModel.getSnacksFromDatabase().listen((snacks) {
       setState(() {
         this.snacks = snacks;
       });
-    }).catchError((error) => debugPrint(error.toString()));
+    }).onError((error) => debugPrint(error.toString()));
 
     super.initState();
   }

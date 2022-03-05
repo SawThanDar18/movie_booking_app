@@ -22,8 +22,11 @@ class _AddCardPageState extends State<AddCardPage> {
   CinemaModel cinemaModel = CinemaModelImpl();
 
   _addCard(String cardNumber, String cardHolderName, String expirationDate, String cvc) {
-    cinemaModel.addCard(cardNumber, cardHolderName, expirationDate, cvc).catchError((error) => debugPrint(error.toString()));
-
+    cinemaModel.addCard(cardNumber, cardHolderName, expirationDate, cvc)
+    .then((value) {
+      cinemaModel.getProfile();
+    })
+        .catchError((error) => debugPrint(error.toString()));
   }
 
   @override
@@ -104,7 +107,7 @@ class _AddCardPageState extends State<AddCardPage> {
         onTapView: () {
           _addCard(this.cardNumberTextController.text, this.cardHolderNameTextController.text, this.cardExpirationDateTextController.text, this.cardCvcTextController.text);
           Navigator.pop(context, true);
-        },
+          },
         text: 'Confirm',
       ),
     );

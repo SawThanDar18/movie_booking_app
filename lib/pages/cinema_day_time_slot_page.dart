@@ -67,23 +67,23 @@ class _CinemaDayTimeSlotPageState extends State<CinemaDayTimeSlotPage> {
         date.isSelected = false;
       });
       datesList[index].isSelected = true;
-      //_getCinemaDayTimeSlots(widget.movieId, date)
       _getCinemaDayTimeSlots(widget.movieId, getSelectedDate());
     });
   }
 
   _getCinemaDayTimeSlots(int movieId, String date) {
-    cinemaModel.getCinemaDayTimeSlots(movieId, date).then((data) {
-      setState(() {
-        dayTimeSlots = data;
-      });
-    }).catchError((error) => debugPrint(error.toString()));
+    // cinemaModel.getCinemaDayTimeSlots(movieId, date).then((data) {
+    //   setState(() {
+    //     dayTimeSlots = data;
+    //   });
+    // }).catchError((error) => debugPrint(error.toString()));
 
-    cinemaModel.getCinemaDayTimeSlotsFromDatabase(date).then((cinemaDayTimeSlots) {
+    print("Dateeee>>>> $date");
+    cinemaModel.getCinemaDayTimeSlotsFromDatabase(movieId, date).listen((cinemaDayTimeSlots) {
       setState(() {
         dayTimeSlots = cinemaDayTimeSlots;
       });
-    }).catchError((error) => error.toString());
+    }).onError((error) => error.toString());
   }
 
   @override
@@ -93,16 +93,10 @@ class _CinemaDayTimeSlotPageState extends State<CinemaDayTimeSlotPage> {
       backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: [
-          // SliverAppBarView(onTapView: () => Navigator.pop(context), onTapCalendar: (String date) {
-          //   choosingDate = date;
-          //   //_getCinemaDayTimeSlots(widget.movieId, choosingDate ?? "");
-          //   _getCinemaList();
-          //   },),
           SliverAppBarView(
             onTapView: () => Navigator.pop(context),
             onTapDate: (index) => _selectedDate(index),
             datesList: datesList,
-            //_getCinemaDayTimeSlots(widget.movieId, choosingDate ?? "");
           ),
           SliverList(
             delegate: SliverChildListDelegate([

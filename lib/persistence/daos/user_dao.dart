@@ -12,11 +12,31 @@ class UserDao {
 
   UserDao._internal();
 
+  Stream<void> getAllUsersEventStream() {
+    return getUserBox().watch();
+  }
+
+  Stream<List<UserVO>> getUsersStream() {
+    return Stream.value(getUsers().toList());
+  }
+
+  String? getUserToken() {
+    return getUsers()[0].token;
+  }
+
+  List<UserVO> getUsers() {
+    if ((getAllUsers().isNotEmpty)) {
+      return getAllUsers().toList();
+    } else {
+      return [];
+    }
+  }
+
   void saveUsers(UserVO user) async {
     return getUserBox().put(user.id, user);
   }
 
-  List<UserVO> getUsers() {
+  List<UserVO> getAllUsers() {
     return getUserBox().values.toList();
   }
 
@@ -29,3 +49,12 @@ class UserDao {
   }
 
 }
+
+
+// String? getUserToken() {
+//   return getUsers()[0].token;
+// }
+//
+// Stream<String?> getUserTokenStream() {
+//   return Stream.value( "Bearer + ${getUserToken.toString()}");
+// }

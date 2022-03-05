@@ -31,29 +31,37 @@ class _MovieDetailsPageState extends State<MovieDetailsPage> {
 
   @override
   void initState() {
-    cinemaModel.getMovieDetails(widget.movieId).then((movieDetails) {
+    cinemaModel.getMovieDetailsFromDatabase(widget.movieId).listen((event) {
       setState(() {
-        this.movieDetails = movieDetails;
+        this.movieDetails = event;
       });
-    }).catchError((error) {
+    }).onError((error) {
       debugPrint(error.toString());
     });
 
-    cinemaModel.getMovieDetailsFromDatabase(widget.movieId).then((movie) {
+    // cinemaModel.getMovieDetails(widget.movieId).then((movieDetails) {
+    //   setState(() {
+    //     this.movieDetails = movieDetails;
+    //   });
+    // }).catchError((error) {
+    //   debugPrint(error.toString());
+    // });
+
+    cinemaModel.getCreditsByMovieFromDatabase(widget.movieId).listen((event) {
       setState(() {
-        this.movieDetails = movie;
+        this.cast = event;
       });
-    }).catchError((error) {
+    }).onError((error) {
       debugPrint(error.toString());
     });
 
-    cinemaModel.getCreditsByMovie(widget.movieId).then((castAndCrew) {
-      setState(() {
-        this.cast = castAndCrew.first;
-      });
-    }).catchError((error) {
-      debugPrint(error.toString());
-    });
+    // cinemaModel.getCreditsByMovie(widget.movieId).then((castAndCrew) {
+    //   setState(() {
+    //     this.cast = castAndCrew.first;
+    //   });
+    // }).catchError((error) {
+    //   debugPrint(error.toString());
+    // });
 
     super.initState();
   }

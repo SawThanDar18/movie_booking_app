@@ -12,6 +12,23 @@ class ActorDao {
 
   ActorDao._internal();
 
+  Stream<void> getAllActorsEventStream() {
+    return getActorBox().watch();
+  }
+
+  Stream<List<ActorVO>> getActorStream() {
+    return Stream.value(getAllActors().toList());
+  }
+
+  List<ActorVO> getActors() {
+    if ((getAllActors().isNotEmpty)) {
+      return getAllActors()
+          .toList();
+    } else {
+      return [];
+    }
+  }
+
   void saveAllActors(List<ActorVO> actorList) async {
     Map<int, ActorVO> actorMap = Map.fromIterable(actorList,
     key: (actor) => actor.id, value: (actor) => actor);

@@ -16,6 +16,14 @@ class CinemaDayTimeDao {
 
   List<DayTimeSlotsVO> cinemaDayTimeSlotsList = [];
 
+  Stream<void> getCinemaDayTimeSlotsEventStream() {
+    return getCinemaDayTimeSlotsBox().watch();
+  }
+
+  Stream<CinemaDayTimeVO?> getCinemaDayTimeSlotsStream(String bookingDate) {
+    return Stream.value(getCinemaDayTimeSlots(bookingDate));
+  }
+
   void saveAllCinemaDayTimeSlots(String bookingDate, CinemaDayTimeVO cinemaDayTimeSlotsList) async {
     await getCinemaDayTimeSlotsBox().put(bookingDate, cinemaDayTimeSlotsList);
   }

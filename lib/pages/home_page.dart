@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_booking_app/data/models/cinema_model.dart';
 import 'package:movie_booking_app/data/models/cinema_model_impl.dart';
+import 'package:movie_booking_app/data/vos/cinema/snacks_vo.dart';
 import 'package:movie_booking_app/data/vos/movies/genre_vo.dart';
 import 'package:movie_booking_app/data/vos/movies/movie_vo.dart';
 import 'package:movie_booking_app/pages/movie_detail_page.dart';
@@ -26,49 +27,50 @@ class _HomePageState extends State<HomePage> {
 
   List<MovieVO>? nowPlayingMovies;
   List<MovieVO>? comingSoonMovies;
+  List<SnacksVO>? snacksList;
   List<GenreVO>? genres;
 
   @override
   void initState() {
 
-    cinemaModel.getUsersFromDatabase().then((user) {
+    cinemaModel.getUsersFromDatabase().listen((user) {
       setState(() {
         name = user[0].name;
         email = user[0].email;
         token = user[0].token;
         print("userToken>> $token");
       });
-    }).catchError((error) => debugPrint(error));
+    }).onError((error) => debugPrint(error));
 
-    cinemaModel.getNowPlayingMovies(1).then((movieList) {
+    // cinemaModel.getNowPlayingMovies(1).then((movieList) {
+    //   setState(() {
+    //     nowPlayingMovies = movieList;
+    //   });
+    // }).catchError((error) {
+    //   debugPrint(error.toString());
+    // });
+
+    cinemaModel.getNowPlayingMoviesFromDatabase().listen((movieList) {
       setState(() {
         nowPlayingMovies = movieList;
       });
-    }).catchError((error) {
+    }).onError((error) {
       debugPrint(error.toString());
     });
 
-    cinemaModel.getNowPlayingMoviesFromDatabase().then((movieList) {
-      setState(() {
-        nowPlayingMovies = movieList;
-      });
-    }).catchError((error) {
-      debugPrint(error.toString());
-    });
+    // cinemaModel.getComingSoonMovies(1).then((movieList) {
+    //   setState(() {
+    //     comingSoonMovies = movieList;
+    //   });
+    // }).catchError((error) {
+    //   debugPrint(error.toString());
+    // });
 
-    cinemaModel.getComingSoonMovies(1).then((movieList) {
-      setState(() {
-        comingSoonMovies = movieList;
-      });
-    }).catchError((error) {
-      debugPrint(error.toString());
-    });
-
-    cinemaModel.getComingSoonMoviesFromDatabase().then((movieList) {
+    cinemaModel.getComingSoonMoviesFromDatabase().listen((movieList) {
       setState(() {
         comingSoonMovies = movieList;
       });
-    }).catchError((error) {
+    }).onError((error) {
       debugPrint(error.toString());
     });
 
@@ -88,9 +90,12 @@ class _HomePageState extends State<HomePage> {
       debugPrint(error.toString());
     });
 
-    cinemaModel.getSnacks().then((snacks) {
-      print("SnacksList>> ${snacks?.length}");
-    }).catchError((error) => debugPrint(error.toString()));
+    cinemaModel.getSnacksFromDatabase().listen((snacksList) {
+      setState(() {
+        this.snacksList = snacksList;
+      });
+      print("SnacksList>> ${snacksList?.length}");
+    }).onError((error) => debugPrint(error.toString()));
 
     super.initState();
   }
