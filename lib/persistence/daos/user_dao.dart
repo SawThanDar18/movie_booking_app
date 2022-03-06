@@ -50,6 +50,9 @@ class UserDao {
 
 }
 
+// Stream<String?> getUserTokenStream() {
+//   return Stream.value(getUserToken());
+// }
 
 // String? getUserToken() {
 //   return getUsers()[0].token;

@@ -35,14 +35,18 @@ abstract class CinemaModel {
 
   void getCinemaDayTimeSlots(int movieId, String date);
   Stream<List<DayTimeSlotsVO>?> getCinemaDayTimeSlotsFromDatabase(int movieId, String date);
+
   Future<List<dynamic>?> getCinemaSeatingPlan(int timeSlotId, String bookingDate);
+
   void getSnacks();
   Stream<List<SnacksVO>?> getSnacksFromDatabase();
   void getPaymentMethods();
   Stream<List<PaymentVO>?> getPaymentMethodsFromDatabase();
+
   Future<UserVO?> getProfile();
   Future<void> addCard(String cardNumber, String cardHolder, String expirationDate, String cvc);
   Stream<List<CardVO>?> getCardsFromDatabase();
+
   Future<UserBookingVO?> checkOut(CheckOutVO checkOut);
 
 

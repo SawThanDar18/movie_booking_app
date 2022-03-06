@@ -153,7 +153,9 @@ class CinemaModelImpl extends CinemaModel {
 
   @override
   void getMovieDetails(int movieId) {
-    _dataAgent.getMovieDetails(movieId);
+    _dataAgent.getMovieDetails(movieId).then((value) {
+      movieDao.saveSingleMovie(value!);
+    });
   }
 
   @override

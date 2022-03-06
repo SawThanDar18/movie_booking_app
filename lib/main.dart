@@ -85,11 +85,7 @@ class _MyAppState extends State<MyApp> {
       });
     }).onError((error) => debugPrint(error.toString()));
 
-    cinemaModel.getSnacksFromDatabase().listen((snacks) {
-      setState(() {
-        this.snacks = snacks;
-      });
-    }).onError((error) => debugPrint(error.toString()));
+    cinemaModel.getSnacks();
 
     super.initState();
   }
