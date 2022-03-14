@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:movie_booking_app/blocs/home_bloc.dart';
 import 'package:movie_booking_app/data/models/cinema_model.dart';
 import 'package:movie_booking_app/data/models/cinema_model_impl.dart';
 import 'package:movie_booking_app/data/vos/cinema/snacks_vo.dart';
@@ -11,6 +12,7 @@ import 'package:movie_booking_app/resources/colors.dart';
 import 'package:movie_booking_app/resources/dimens.dart';
 import 'package:movie_booking_app/widgets/circle_image_shape_view.dart';
 import 'package:movie_booking_app/widgets/movie_view.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
 

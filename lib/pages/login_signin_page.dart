@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:movie_booking_app/blocs/authentication_bloc.dart';
 import 'package:movie_booking_app/data/models/cinema_model.dart';
 import 'package:movie_booking_app/data/models/cinema_model_impl.dart';
 import 'package:movie_booking_app/network/responses/error_response.dart';
@@ -18,6 +19,7 @@ import 'package:movie_booking_app/widgets/label_text_view.dart';
 import 'package:movie_booking_app/widgets/text_field_label_view.dart';
 import 'package:movie_booking_app/widgets/text_field_view.dart';
 import 'package:movie_booking_app/widgets/welcome_text_view.dart';
+import 'package:provider/provider.dart';
 
 class LogInSignInPage extends StatefulWidget {
   @override
@@ -71,31 +73,6 @@ class _LogInSignInPageState extends State<LogInSignInPage> {
       });
     });
   }
-
-  // FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-  //
-  // Future<void> _signInWithGoogle(BuildContext context) async {
-  //   final GoogleSignIn googleSignIn = GoogleSignIn();
-  //  
-  //   final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
-  //   if (googleSignInAccount != null) {
-  //     final GoogleSignInAuthentication googleSignInAuthentication = await googleSignInAccount.authentication;
-  //     final AuthCredential authCredential = GoogleAuthProvider.credential(
-  //         idToken: googleSignInAuthentication.idToken,
-  //         accessToken: googleSignInAuthentication.accessToken);
-  //
-  //     UserCredential result = await firebaseAuth.signInWithCredential(authCredential);
-  //     User? user = result.user;
-  //     name = user?.displayName;
-  //     email = user?.email;
-  //
-  //     print("Google Access Token>>> ${googleSignInAuthentication.accessToken}");
-  //     print(user?.email);
-  //     print(user?.displayName);
-  //
-  //     //_navigateToHomePage(context);
-  //   }
-  // }
 
   _registerWithFacebook() async {
     final LoginResult loginResult = await FacebookAuth.instance.login();
@@ -182,7 +159,6 @@ class _LogInSignInPageState extends State<LogInSignInPage> {
             SizedBox(
               height: SIZED_BOX_HEIGHT_40,
             ),
-            //TabBarSection(tabList),
             TabBarSectionView(
               tabList: tabList,
               onTapRegisterView: (String name, String email, String phoneNumber,
@@ -200,8 +176,7 @@ class _LogInSignInPageState extends State<LogInSignInPage> {
   }
 
   _navigateToHomePage(BuildContext context) {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => HomePage()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
   }
 }
 
