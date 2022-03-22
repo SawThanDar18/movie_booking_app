@@ -1,4 +1,3 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -52,7 +51,7 @@ void main() async{
   await Hive.openBox<DayTimeSlotsVO>(BOX_NAME_DAY_TIME_SLOTS_VO);
   await Hive.openBox<TimeSlotsVO>(BOX_NAME_TIME_SLOTS_VO);
 
-  await Firebase.initializeApp();
+  //await Firebase.initializeApp();
   FacebookAuth.instance.webInitialize(
     appId: "307245218136286",
     cookie: true,
@@ -81,7 +80,11 @@ class _MyAppState extends State<MyApp> {
 
     cinemaModel.getUsersFromDatabase().listen((user) {
       setState(() {
-        userVO = user.toList().first;
+        if (user.isNotEmpty) {
+          userVO = user
+              .toList()
+              .first;
+        }
       });
     }).onError((error) => debugPrint(error.toString()));
 

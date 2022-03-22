@@ -1,11 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:movie_booking_app/data/models/cinema_model.dart';
-import 'package:movie_booking_app/data/models/cinema_model_impl.dart';
-import 'package:movie_booking_app/data/vos/cinema/checkout_vo.dart';
+import 'package:movie_booking_app/blocs/payment_bloc.dart';
 import 'package:movie_booking_app/data/vos/cinema/snacks_vo.dart';
-import 'package:movie_booking_app/data/vos/cinema/user_booking_vo.dart';
 import 'package:movie_booking_app/data/vos/users/card_vo.dart';
 import 'package:movie_booking_app/pages/add_card_page.dart';
 import 'package:movie_booking_app/pages/ticket_page.dart';
@@ -13,8 +10,9 @@ import 'package:movie_booking_app/resources/colors.dart';
 import 'package:movie_booking_app/resources/dimens.dart';
 import 'package:movie_booking_app/widgets/floating_button_view.dart';
 import 'package:movie_booking_app/widgets/text_view.dart';
+import 'package:provider/provider.dart';
 
-class PaymentPage extends StatefulWidget {
+class PaymentPage extends StatelessWidget {
   final String bookingDate;
   final int timeSlotId;
   final String timeSlot;
@@ -45,163 +43,113 @@ class PaymentPage extends StatefulWidget {
       required this.cardId,
       required this.boughtSnacks});
 
-  @override
-  State<PaymentPage> createState() => _PaymentPageState();
-}
-
-class _PaymentPageState extends State<PaymentPage> {
-  List<CardVO>? cards;
-  CardVO? chooseCard;
-
-  UserBookingVO? userBooking;
-
-  CinemaModel cinemaModel = CinemaModelImpl();
-
-  _getCards() {
-
-    cinemaModel.getCardsFromDatabase().listen((event) {
-      setState(() {
-        cards = event;
-        //chooseCard = cards?[0];
-      });
-    }).onError((error) => debugPrint(error.toString()));
-  }
-
-  @override
-  void initState() {
-    _getCards();
-
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
+    return ChangeNotifierProvider(
+      create: (BuildContext context) => PaymentBloc(),
+      child: Scaffold(
         backgroundColor: Colors.white,
-        elevation: 0.0,
-        leading: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: Container(
-            margin: EdgeInsets.only(top: MARGIN_20),
-            child: Icon(
-              Icons.chevron_left,
-              color: Colors.black,
-              size: BACK_ARROW_ICON_SIZE_40,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          leading: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              margin: EdgeInsets.only(top: MARGIN_20),
+              child: Icon(
+                Icons.chevron_left,
+                color: Colors.black,
+                size: BACK_ARROW_ICON_SIZE_40,
+              ),
             ),
           ),
         ),
-      ),
-      body: Container(
-        margin: EdgeInsets.only(top: MARGIN_20, left: MARGIN_20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextView("Payment amount", TICKET_PAGE_LABEL_COLOR, FONT_SIZE_20),
-            SizedBox(
-              height: SIZED_BOX_HEIGHT_10,
-            ),
-            TextView(
-              "\$ ${widget.totalPrice}",
-              Colors.black,
-              FONT_SIZE_25,
-              fontWeight: FontWeight.bold,
-            ),
-            SizedBox(
-              height: SIZED_BOX_HEIGHT_20,
-            ),
-            CarouselSliderView(
-                cards: cards ?? [],
-                onTapView: (index) {
-                  setState(() {
-                    chooseCard = cards?[index];
-                  });
-                }),
-            SizedBox(
-              height: SIZED_BOX_HEIGHT_20,
-            ),
-            AddCardRowView(
-              () => _navigateToAddCardPage(context),
-            ),
-          ],
+        body: Container(
+          margin: EdgeInsets.only(top: MARGIN_20, left: MARGIN_20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextView("Payment amount", TICKET_PAGE_LABEL_COLOR, FONT_SIZE_20),
+              SizedBox(
+                height: SIZED_BOX_HEIGHT_10,
+              ),
+              TextView(
+                "\$ $totalPrice",
+                Colors.black,
+                FONT_SIZE_25,
+                fontWeight: FontWeight.bold,
+              ),
+              SizedBox(
+                height: SIZED_BOX_HEIGHT_20,
+              ),
+              Selector<PaymentBloc, List<CardVO>?>(
+                selector: (context, bloc) => bloc.cards,
+                builder:
+                    (BuildContext context, cards,
+                    Widget? child) {
+                  return CarouselSliderView(
+                      cards: cards ?? [],
+                      onTapView: (index) {
+                        PaymentBloc paymentBloc = Provider.of(context, listen: false);
+                        paymentBloc.carouselSliderChange(index);
+                      });
+                },
+              ),
+              SizedBox(
+                height: SIZED_BOX_HEIGHT_20,
+              ),
+              AddCardRowView(
+                () => _navigateToAddCardPage(context),
+              ),
+            ],
+          ),
         ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingButtonView(
-        onTapView: () {
-          CheckOutVO checkOutVO = CheckOutVO(
-              widget.timeSlotId,
-              widget.seatRow,
-              widget.seatName,
-              widget.bookingDate,
-              widget.totalPrice,
-              widget.movieId,
-              chooseCard?.id,
-              widget.cinemaId,
-              widget.boughtSnacks);
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton:  Builder(
+          builder: (context) => FloatingButtonView(
+            onTapView: () {
+              PaymentBloc paymentBloc = Provider.of(context, listen: false);
+              paymentBloc.checkout(timeSlotId, seatRow, seatName, bookingDate, totalPrice, movieId, cardId, cinemaId, boughtSnacks).then((value) {
+                _navigateToTicketPage(context);
+              }).catchError((error) {
+                debugPrint(error.toString());
+              });
+            },
+            text: 'Purchase',
+          ),
+        ),
 
-          print(checkOutVO.row);
-          print(checkOutVO.seatName);
-
-          cinemaModel.checkOut(checkOutVO).then((data) {
-            print(data?.seat);
-            userBooking = data;
-            _navigateToTicketPage(context, data);
-
-          }).catchError((error) {
-            debugPrint(error.toString());
-          });
-
-          //   print("fail");
-          //   print("timeslotId>> ${widget.timeSlotId}");
-          //   print("row>>${widget.seatRow}");
-          //   print("seatname>>${widget.seatName}");
-          //   print("date>>${widget.bookingDate}");
-          //   print("price>>${widget.totalPrice}");
-          //   print("id>>>${widget.movieId}");
-          //   print("cardId>>${widget.cardId}");
-          //   print("cinemaId>>${widget.cinemaId}");
-          //   print("snacks>>${widget.boughtSnacks}");
-
-          // print("timeslotId>> ${checkOutVO?.timeSlotsId}");
-          // print("row>>${checkOutVO?.row}");
-          // print("seatname>>${checkOutVO?.seatName}");
-          // print("date>>${checkOutVO?.bookingDate}");
-          // print("price>>${checkOutVO?.totalPrice}");
-          // print("id>>>${checkOutVO?.movieId}");
-          // print("cardId>>${checkOutVO?.cardId}");
-          // print("cinemaId>>${checkOutVO?.cinemaId}");
-          // print("snacks>>${checkOutVO?.snacks}");
-
-          //print(data?.bookingNo);
-          // print("timeslotId>> ${data?.timeSlotsVO?.dayTimeSlotsId}");
-          // print("row>>${data?.row}");
-          // print("seatname>>${data?.seat}");
-          // print("date>>${data?.totalSeat}");
-          // print("price>>${data?.total}");
-          // print("id>>>${data?.movieId}");
-          // print("cardId>>${data?.bookingDate}");
-          // print("cinemaId>>${data?.cinemaId}");
-          // print("snacks>>${data?.bookingNo}");
-          // print("username>>${data?.userName}");
-          // print("qrcode>>${data?.qrCode}");
-        },
-        text: 'Purchase',
+        /*Selector<PaymentBloc, UserBookingVO?>(
+          selector: (context, bloc) => bloc.userBooking,
+          builder: (context, userBooking, child) => FloatingButtonView(
+            onTapView: () {
+              print("seat $seatName");
+              PaymentBloc paymentBloc = Provider.of(context, listen: false);
+              paymentBloc.checkout(timeSlotId, seatRow, seatName, bookingDate, totalPrice, movieId, cardId, cinemaId, boughtSnacks).then((value) {
+                _navigateToTicketPage(context);
+              }).catchError((error) {
+                debugPrint(error.toString());
+              });
+            },
+            text: 'Purchase',
+          ),
+        ),*/
       ),
     );
   }
 
-  _navigateToTicketPage(BuildContext context, UserBookingVO? userBookingVO) {
-    if (userBooking != null) {
+  _navigateToTicketPage(BuildContext context) {
+    PaymentBloc paymentBloc = Provider.of(context, listen: false);
+    if (paymentBloc.userBooking != null) {
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => TicketPage(
-                  movieName: widget.movieName,
-                  moviePoster: widget.moviePoster,
-                  cinemaName: widget.cinemaName,
-                  userBooking: userBooking!)));
+                  movieName: movieName,
+                  moviePoster: moviePoster,
+                  cinemaName: cinemaName,
+                  userBooking: paymentBloc.userBooking!)));
     }
   }
 
@@ -398,3 +346,169 @@ class CarouselItemView extends StatelessWidget {
     );
   }
 }
+
+
+/*
+
+class PaymentPage extends StatefulWidget {
+  final String bookingDate;
+  final int timeSlotId;
+  final String timeSlot;
+  final int cinemaId;
+  final String cinemaName;
+  final int movieId;
+  final String movieName;
+  final String moviePoster;
+  final double totalPrice;
+  final String seatRow;
+  final String seatName;
+  final int cardId;
+  final List<SnacksVO> boughtSnacks;
+
+  PaymentPage(
+      {
+        required this.bookingDate,
+        required this.timeSlotId,
+        required this.timeSlot,
+        required this.cinemaId,
+        required this.cinemaName,
+        required this.movieId,
+        required this.movieName,
+        required this.moviePoster,
+        required this.totalPrice,
+        required this.seatRow,
+        required this.seatName,
+        required this.cardId,
+        required this.boughtSnacks});
+
+  @override
+  State<PaymentPage> createState() => _PaymentPageState();
+}
+
+class _PaymentPageState extends State<PaymentPage> {
+  List<CardVO>? cards;
+  CardVO? chooseCard;
+
+  UserBookingVO? userBooking;
+
+  CinemaModel cinemaModel = CinemaModelImpl();
+
+  _getCards() {
+
+    cinemaModel.getCardsFromDatabase().listen((event) {
+      setState(() {
+        cards = event;
+        //chooseCard = cards?[0];
+      });
+    }).onError((error) => debugPrint(error.toString()));
+  }
+
+  @override
+  void initState() {
+    _getCards();
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (BuildContext context) => PaymentBloc(),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          leading: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              margin: EdgeInsets.only(top: MARGIN_20),
+              child: Icon(
+                Icons.chevron_left,
+                color: Colors.black,
+                size: BACK_ARROW_ICON_SIZE_40,
+              ),
+            ),
+          ),
+        ),
+        body: Container(
+          margin: EdgeInsets.only(top: MARGIN_20, left: MARGIN_20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextView("Payment amount", TICKET_PAGE_LABEL_COLOR, FONT_SIZE_20),
+              SizedBox(
+                height: SIZED_BOX_HEIGHT_10,
+              ),
+              TextView(
+                "\$ ${widget.totalPrice}",
+                Colors.black,
+                FONT_SIZE_25,
+                fontWeight: FontWeight.bold,
+              ),
+              SizedBox(
+                height: SIZED_BOX_HEIGHT_20,
+              ),
+              Selector<PaymentBloc, List<CardVO>?>(
+                selector: (context, bloc) => bloc.cards,
+                builder:
+                    (BuildContext context, cards,
+                    Widget? child) {
+                  return CarouselSliderView(
+                      cards: cards ?? [],
+                      onTapView: (index) {
+                        PaymentBloc paymentBloc = Provider.of(context, listen: false);
+                        paymentBloc.carouselSliderChange(index);
+                      });
+                },
+              ),
+              SizedBox(
+                height: SIZED_BOX_HEIGHT_20,
+              ),
+              AddCardRowView(
+                    () => _navigateToAddCardPage(context),
+              ),
+            ],
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: Builder(
+          builder: (context) => FloatingButtonView(
+            onTapView: () {
+              PaymentBloc paymentBloc = Provider.of(context, listen: false);
+              paymentBloc.checkout(timeSlotId, seatRow, seatName, bookingDate, totalPrice, movieId, cardId, cinemaId, boughtSnacks).then((value) {
+                _navigateToTicketPage(context, value);
+              }).catchError((error) {
+                debugPrint(error.toString());
+              });
+            },
+            text: 'Purchase',
+          ),
+        ),
+      ),
+    );
+  }
+
+  _navigateToTicketPage(BuildContext context, UserBookingVO? userBookingVO) {
+    if (userBooking != null) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => TicketPage(
+                  movieName: widget.movieName,
+                  moviePoster: widget.moviePoster,
+                  cinemaName: widget.cinemaName,
+                  userBooking: userBooking!)));
+    }
+  }
+
+  Future<dynamic> _navigateToAddCardPage(BuildContext context) {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddCardPage(),
+      ),
+    );
+
+  }
+}*/

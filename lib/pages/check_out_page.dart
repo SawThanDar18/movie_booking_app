@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:movie_booking_app/data/models/cinema_model.dart';
-import 'package:movie_booking_app/data/models/cinema_model_impl.dart';
+import 'package:movie_booking_app/blocs/snacks_bloc.dart';
 import 'package:movie_booking_app/data/vos/cinema/payment_vo.dart';
 import 'package:movie_booking_app/data/vos/cinema/snacks_vo.dart';
 import 'package:movie_booking_app/pages/payment_page.dart';
 import 'package:movie_booking_app/resources/colors.dart';
 import 'package:movie_booking_app/resources/dimens.dart';
 import 'package:movie_booking_app/widgets/floating_button_view.dart';
+import 'package:provider/provider.dart';
 
-class CheckOutPage extends StatefulWidget {
+class CheckOutPage extends StatelessWidget {
   final String bookingDate;
   final int timeSlotId;
   final String timeSlot;
@@ -36,162 +36,125 @@ class CheckOutPage extends StatefulWidget {
       required this.seatName});
 
   @override
-  State<CheckOutPage> createState() => _CheckOutPageState();
-}
-
-class _CheckOutPageState extends State<CheckOutPage> {
-  List<SnacksVO>? snacks;
-  List<PaymentVO>? paymentMethods;
-
-  double subTotal = 0;
-  double payTotalPrice = 0;
-  int? quantity;
-  int? selectPaymentId;
-
-  List<SnacksVO> boughtSnacks = [];
-
-  CinemaModel cinemaModel = CinemaModelImpl();
-
-  @override
-  void initState() {
-
-    cinemaModel.getSnacksFromDatabase().listen((snacksList) {
-      setState(() {
-        snacks = snacksList;
-        subTotal = widget.subTotal;
-        payTotalPrice = subTotal;
-      });
-    });
-
-    cinemaModel.getPaymentMethodsFromDatabase().listen((paymentMethods) {
-      setState(() {
-        this.paymentMethods = paymentMethods;
-      });
-    }).onError((error) => debugPrint(error.toString()));
-
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
+    return ChangeNotifierProvider(
+      create: (BuildContext context) => SnacksBloc(subTotal),
+      child: Scaffold(
         backgroundColor: Colors.white,
-        elevation: 0.0,
-        leading: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: Container(
-            margin: EdgeInsets.only(top: MARGIN_20),
-            child: Icon(
-              Icons.chevron_left,
-              color: Colors.black,
-              size: CHEVRON_LEFT_ICON_SIZE,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          leading: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              margin: EdgeInsets.only(top: MARGIN_20),
+              child: Icon(
+                Icons.chevron_left,
+                color: Colors.black,
+                size: CHEVRON_LEFT_ICON_SIZE,
+              ),
             ),
           ),
         ),
-      ),
-      body: Container(
-        margin: EdgeInsets.all(MARGIN_20),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SelectComboSetView(
-                snacks: snacks,
-                onTapIncrease: (snack) {
-                  setState(() {
-                    snacks?.forEach((each) {
-                      if (each.id == snack.id) {
-                        each.quantity = (each.quantity ?? 0) + 1;
-                      }
-                    });
-                    subTotal += snack.snackPrice ?? 0;
-                    payTotalPrice = subTotal;
-                  });
-                },
-                onTapDecrease: (snack) {
-                  setState(() {
-                    if ((snack.quantity ?? 0) > 0) {
-                      subTotal -= snack.snackPrice ?? 0;
-                      payTotalPrice = subTotal;
-                    }
-                    snacks?.forEach((each) {
-                      if (each.id == snack.id) {
-                        if ((each.quantity ?? 0) > 0) {
-                          each.quantity = (each.quantity ?? 0) - 1;
-                        }
-                      }
-                    });
-                  });
-                },
-              ),
-              SizedBox(
-                height: SIZED_BOX_HEIGHT_10,
-              ),
-              PromoCodeView(),
-              SizedBox(
-                height: SIZED_BOX_HEIGHT_20,
-              ),
-              Text(
-                "Sub total : ${widget.subTotal}\$",
-                style: TextStyle(color: Colors.green, fontSize: FONT_SIZE_18),
-              ),
-              SizedBox(
-                height: SIZED_BOX_HEIGHT_40,
-              ),
-              Text(
-                "Payment method",
-                style: TextStyle(
-                  color: CHECK_OUT_PAGE_TITLE_COLOR,
-                  fontWeight: FontWeight.bold,
-                  fontSize: FONT_SIZE_20,
+        body: Container(
+          margin: EdgeInsets.all(MARGIN_20),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Selector<SnacksBloc, List<SnacksVO>?>(
+                  selector: (context, bloc) => bloc.snacks,
+                  shouldRebuild: (previous, next) => previous != next,
+                  builder:
+                      (BuildContext context, snacks,
+                      Widget? child) {
+                    return  SelectComboSetView(
+                      snacks: snacks,
+                      onTapIncrease: (snack) {
+                        SnacksBloc snacksBloc = Provider.of(context, listen: false);
+                        snacksBloc.onTapIncrease(snack);
+                      },
+                      onTapDecrease: (snack) {
+                        SnacksBloc snacksBloc = Provider.of(context, listen: false);
+                        snacksBloc.onTapDecrease(snack);
+                      },
+                    );
+                  },
                 ),
-              ),
-              SizedBox(
-                height: SIZED_BOX_HEIGHT_20,
-              ),
-              PaymentMethodView(paymentMethods: paymentMethods,
-                  onTapView: (cardId) {
-                setState(() {
-                  paymentMethods?.forEach((paymentMethod) {
-                    if (paymentMethod.id == cardId) {
-                      paymentMethod.isSelected = true;
-                      selectPaymentId = cardId;
-                    } else {
-                      paymentMethod.isSelected = false;
-                    }
-                  });
-                });
-                  }),
-              SizedBox(
-                height: SIZED_BOX_HEIGHT_100,
-              ),
-            ],
+                SizedBox(
+                  height: SIZED_BOX_HEIGHT_10,
+                ),
+                PromoCodeView(),
+                SizedBox(
+                  height: SIZED_BOX_HEIGHT_20,
+                ),
+                Text(
+                  "Sub total : $subTotal\$",
+                  style: TextStyle(color: Colors.green, fontSize: FONT_SIZE_18),
+                ),
+                SizedBox(
+                  height: SIZED_BOX_HEIGHT_40,
+                ),
+                Text(
+                  "Payment method",
+                  style: TextStyle(
+                    color: CHECK_OUT_PAGE_TITLE_COLOR,
+                    fontWeight: FontWeight.bold,
+                    fontSize: FONT_SIZE_20,
+                  ),
+                ),
+                SizedBox(
+                  height: SIZED_BOX_HEIGHT_20,
+                ),
+                Selector<SnacksBloc, List<PaymentVO>?>(
+                  selector: (context, bloc) => bloc.paymentMethods,
+                  shouldRebuild: (previous, next) => previous != next,
+                  builder:
+                      (BuildContext context, paymentMethods,
+                      Widget? child) {
+                    return Selector <SnacksBloc, int?>(
+                      selector: (context, bloc) => bloc.selectPaymentId,
+                      shouldRebuild: (previous, next) => previous != next,
+                      builder: (BuildContext context, selectPaymentId, Widget? child) {
+                        return  PaymentMethodView(
+                            paymentMethods: paymentMethods,
+                            onTapView: (selectPaymentId) {
+                              SnacksBloc snacksBloc = Provider.of(context, listen: false);
+                              snacksBloc.onTapPaymentMethod(selectPaymentId);
+                            });
+                      },
+                    );
+                  },
+                ),
+                SizedBox(
+                  height: SIZED_BOX_HEIGHT_100,
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingButtonView(
-        onTapView: () {
-          var length = snacks?.length ?? 0;
-          for (int i=0; i<length; i++) {
-            var amount = snacks?[i].quantity ?? 0;
-            if (amount > 0) {
-              setState(() {
-                boughtSnacks.add(snacks![i]);
-              });
-            }
-          }
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton:  Selector<SnacksBloc, double?>(
+          selector: (context, bloc) => bloc.payTotalPrice,
+          shouldRebuild: (previous, next) => previous != next,
+          builder:
+              (BuildContext context, payTotalPrice,
+              Widget? child) {
+            return  FloatingButtonView(
+              onTapView: () {
+                SnacksBloc snacksBloc = Provider.of(context, listen: false);
+                snacksBloc.savedSelectedSnacks();
 
-          if (selectPaymentId != null) {
-            _navigateToPaymentPage(context, selectPaymentId, boughtSnacks);
-          } else {
-            _showToast(context, "Please select Payment!");
-          }
-
-        },
-        text: 'Pay \$$payTotalPrice.00',
+                if (snacksBloc.selectPaymentId != null) {
+                  _navigateToPaymentPage(context);
+                } else {
+                  _showToast(context, "Please select Payment!");
+                }
+              },
+              text: 'Pay \$$payTotalPrice.00',
+            );
+          },
+        ),
       ),
     );
   }
@@ -202,24 +165,25 @@ class _CheckOutPageState extends State<CheckOutPage> {
     ));
   }
 
-  _navigateToPaymentPage(BuildContext context, int? paymentId, List<SnacksVO>? boughtSnacks) {
-    if (paymentId != null && boughtSnacks != null) {
+  _navigateToPaymentPage(BuildContext context) {
+    SnacksBloc snacksBloc = Provider.of(context, listen: false);
+    if (snacksBloc.selectPaymentId != null && snacksBloc.boughtSnacks != null) {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) =>
           PaymentPage(
-              bookingDate: widget.bookingDate,
-              timeSlotId: widget.timeSlotId,
-              timeSlot: widget.timeSlot,
-              cinemaId: widget.cinemaId,
-              cinemaName: widget.cinemaName,
-              movieId: widget.movieId,
-              movieName: widget.movieName,
-              moviePoster: widget.moviePoster,
-              totalPrice: payTotalPrice,
-              seatRow: widget.seatRow,
-              seatName: widget.seatName,
-              cardId: paymentId,
-          boughtSnacks: boughtSnacks)));
+              bookingDate: bookingDate,
+              timeSlotId: timeSlotId,
+              timeSlot: timeSlot,
+              cinemaId: cinemaId,
+              cinemaName: cinemaName,
+              movieId: movieId,
+              movieName: movieName,
+              moviePoster: moviePoster,
+              totalPrice: snacksBloc.payTotalPrice,
+              seatRow: seatRow,
+              seatName: seatName,
+              cardId: snacksBloc.selectPaymentId ?? 0,
+          boughtSnacks: snacksBloc.boughtSnacks)));
     }
   }
 }
@@ -292,7 +256,7 @@ class _CardRowViewState extends State<CardRowView> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          this.widget.onTapView(widget.paymentMethod?.id ?? 0);
+          widget.onTapView(widget.paymentMethod?.id ?? 0);
         });
       },
       child: Column(
@@ -614,3 +578,211 @@ class _IncreaseAndDecreaseViewState extends State<IncreaseAndDecreaseView> {
     );
   }
 }
+
+/*
+class CheckOutPage extends StatefulWidget {
+  final String bookingDate;
+  final int timeSlotId;
+  final String timeSlot;
+  final int cinemaId;
+  final String cinemaName;
+  final int movieId;
+  final String movieName;
+  final String moviePoster;
+  final double subTotal;
+  final String seatRow;
+  final String seatName;
+
+  CheckOutPage(
+      {
+        required this.bookingDate,
+        required this.timeSlotId,
+        required this.timeSlot,
+        required this.cinemaId,
+        required this.cinemaName,
+        required this.movieId,
+        required this.movieName,
+        required this.moviePoster,
+        required this.subTotal,
+        required this.seatRow,
+        required this.seatName});
+
+  @override
+  State<CheckOutPage> createState() => _CheckOutPageState();
+}
+
+class _CheckOutPageState extends State<CheckOutPage> {
+  List<SnacksVO>? snacks;
+  List<PaymentVO>? paymentMethods;
+
+  double subTotal = 0;
+  double payTotalPrice = 0;
+  int? quantity;
+  int? selectPaymentId;
+
+  List<SnacksVO> boughtSnacks = [];
+
+  CinemaModel cinemaModel = CinemaModelImpl();
+
+  @override
+  void initState() {
+
+    cinemaModel.getSnacksFromDatabase().listen((snacksList) {
+      setState(() {
+        snacks = snacksList;
+        subTotal = widget.subTotal;
+        payTotalPrice = subTotal;
+      });
+    });
+
+    cinemaModel.getPaymentMethodsFromDatabase().listen((paymentMethods) {
+      setState(() {
+        this.paymentMethods = paymentMethods;
+      });
+    }).onError((error) => debugPrint(error.toString()));
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (BuildContext context) => SnacksBloc(subTotal),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          leading: GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              margin: EdgeInsets.only(top: MARGIN_20),
+              child: Icon(
+                Icons.chevron_left,
+                color: Colors.black,
+                size: CHEVRON_LEFT_ICON_SIZE,
+              ),
+            ),
+          ),
+        ),
+        body: Container(
+          margin: EdgeInsets.all(MARGIN_20),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Selector<SnacksBloc, List<SnacksVO>?>(
+                  selector: (context, bloc) => bloc.snacks,
+                  builder:
+                      (BuildContext context, snacks,
+                      Widget? child) {
+                    return  SelectComboSetView(
+                      snacks: snacks,
+                      onTapIncrease: (snack) {
+                        SnacksBloc snacksBloc = Provider.of(context, listen: false);
+                        snacksBloc.onTapIncrease(snack);
+                      },
+                      onTapDecrease: (snack) {
+                        SnacksBloc snacksBloc = Provider.of(context, listen: false);
+                        snacksBloc.onTapDecrease(snack);
+                      },
+                    );
+                  },
+                ),
+                SizedBox(
+                  height: SIZED_BOX_HEIGHT_10,
+                ),
+                PromoCodeView(),
+                SizedBox(
+                  height: SIZED_BOX_HEIGHT_20,
+                ),
+                Text(
+                  "Sub total : ${widget.subTotal}\$",
+                  style: TextStyle(color: Colors.green, fontSize: FONT_SIZE_18),
+                ),
+                SizedBox(
+                  height: SIZED_BOX_HEIGHT_40,
+                ),
+                Text(
+                  "Payment method",
+                  style: TextStyle(
+                    color: CHECK_OUT_PAGE_TITLE_COLOR,
+                    fontWeight: FontWeight.bold,
+                    fontSize: FONT_SIZE_20,
+                  ),
+                ),
+                SizedBox(
+                  height: SIZED_BOX_HEIGHT_20,
+                ),
+                Selector<SnacksBloc, List<PaymentVO>?>(
+                  selector: (context, bloc) => bloc.paymentMethods,
+                  builder:
+                      (BuildContext context, paymentMethods,
+                      Widget? child) {
+                    return   PaymentMethodView(
+                        paymentMethods: paymentMethods,
+                        onTapView: (cardId) {
+                          SnacksBloc snacksBloc = Provider.of(context, listen: false);
+                          snacksBloc.onTapPaymentMethod(cardId);
+                        });
+                  },
+                ),
+                SizedBox(
+                  height: SIZED_BOX_HEIGHT_100,
+                ),
+              ],
+            ),
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton:  Selector<SnacksBloc, double?>(
+          selector: (context, bloc) => bloc.payTotalPrice,
+          builder:
+              (BuildContext context, payTotalPrice,
+              Widget? child) {
+            return  FloatingButtonView(
+              onTapView: () {
+                SnacksBloc snacksBloc = Provider.of(context, listen: false);
+                snacksBloc.savedSelectedSnacks();
+
+                if (snacksBloc.selectPaymentId != null) {
+                  _navigateToPaymentPage(context, snacksBloc.selectPaymentId, snacksBloc.boughtSnacks);
+                } else {
+                  _showToast(context, "Please select Payment!");
+                }
+              },
+              text: 'Pay \$$payTotalPrice.00',
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  _showToast(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+    ));
+  }
+
+  _navigateToPaymentPage(BuildContext context, int? paymentId, List<SnacksVO>? boughtSnacks) {
+    if (paymentId != null && boughtSnacks != null) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) =>
+          PaymentPage(
+              bookingDate: widget.bookingDate,
+              timeSlotId: widget.timeSlotId,
+              timeSlot: widget.timeSlot,
+              cinemaId: widget.cinemaId,
+              cinemaName: widget.cinemaName,
+              movieId: widget.movieId,
+              movieName: widget.movieName,
+              moviePoster: widget.moviePoster,
+              totalPrice: payTotalPrice,
+              seatRow: widget.seatRow,
+              seatName: widget.seatName,
+              cardId: paymentId,
+              boughtSnacks: boughtSnacks)));
+    }
+  }
+}*/

@@ -1,11 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:movie_booking_app/blocs/authentication_bloc.dart';
 import 'package:movie_booking_app/data/models/cinema_model.dart';
@@ -21,95 +19,11 @@ import 'package:movie_booking_app/widgets/text_field_view.dart';
 import 'package:movie_booking_app/widgets/welcome_text_view.dart';
 import 'package:provider/provider.dart';
 
-class LogInSignInPage extends StatefulWidget {
-  @override
-  State<LogInSignInPage> createState() => _LogInSignInPageState();
-}
+class LogInSignInPage extends StatelessWidget {
 
-class _LogInSignInPageState extends State<LogInSignInPage> {
   final List<String> tabList = ["Log In", "Sign In"];
 
-  CinemaModel cinemaModel = CinemaModelImpl();
-
-  String? name;
-  String? email;
-  String? googleToken;
-  String? facebookToken;
-
-  _registerWithEmail(String name, String email, String phoneNumber, String password, String googleAccessToken, String facebookAccessToken) {
-    cinemaModel
-        .registerWithEmail(name, email, phoneNumber, password, googleAccessToken, facebookAccessToken)
-        .then((successMsg) {
-      _showToast("SignIn Successful!");
-      _navigateToHomePage(context);
-    }).catchError((error) {
-      handleError(context, error);
-    });
-  }
-
-  _logInWithEmail(String email, String password) {
-    cinemaModel.logInWithEmail(email, password).then((successMsg) {
-      _showToast("LogIn Successful!");
-      _navigateToHomePage(context);
-    }).catchError((error) {
-      handleError(context, error);
-    });
-  }
-
-  _registerWithGoogle() {
-    GoogleSignIn googleSignIn = GoogleSignIn(
-      scopes: [
-        "email",
-        "https://www.googleapis.com/auth/contacts.readonly",
-      ],
-    );
-    googleSignIn.signIn().then((googleAccount) {
-      googleAccount?.authentication.then((authentication) {
-        setState(() {
-          name = googleAccount.displayName;
-          email = googleAccount.email;
-          googleToken = googleAccount.id;
-        });
-      });
-    });
-  }
-
-  _registerWithFacebook() async {
-    final LoginResult loginResult = await FacebookAuth.instance.login();
-    if (loginResult.status == LoginStatus.success) {
-      final userData = await FacebookAuth.instance.getUserData();
-      setState(() {
-        name = userData["name"].toString();
-        email = userData["email"].toString();
-        facebookToken = loginResult.accessToken?.userId;
-
-        print("FacebookUserName>>> ${userData["name"].toString()}");
-      });
-    } else {
-      print("LoginStatus>>> ${loginResult.status}");
-      print("Message>>>> ${loginResult.message}");
-    }
-  }
-  
-  _logInWithGoogle() {
-    cinemaModel.logInWithGoogle(googleToken ?? "")
-        .then((user) {
-         if (user != null) {
-           _navigateToHomePage(context);
-         }
-    }).catchError((error) => debugPrint(error.toString()));
-  }
-
-  _logInWithFacebook() {
-    cinemaModel.logInWithFacebook(facebookToken ?? "")
-        .then((user) {
-      if (user != null) {
-        _navigateToHomePage(context);
-      }
-    }).catchError((error) => debugPrint(error.toString()));
-  }
-
-  _showToast(String text) {
+  _showToast(String text, BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(text),
     ));
@@ -117,14 +31,15 @@ class _LogInSignInPageState extends State<LogInSignInPage> {
 
   void handleError(BuildContext context, dynamic error) {
     if (error is DioError) {
-    try {
-    ErrorResponse errorResponse = ErrorResponse.fromJson(error.response!.data);
-    showErrorAlert(context, errorResponse.message.toString());
-    } on Error catch (e) {
-      showErrorAlert(context, e.toString());
-   }
+      try {
+        ErrorResponse errorResponse =
+            ErrorResponse.fromJson(error.response!.data);
+        showErrorAlert(context, errorResponse.message.toString());
+      } on Error catch (e) {
+        showErrorAlert(context, e.toString());
+      }
     } else {
-    showErrorAlert(context, error.toString());
+      showErrorAlert(context, error.toString());
     }
   }
 
@@ -136,53 +51,94 @@ class _LogInSignInPageState extends State<LogInSignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: false,
-      body: Container(
-        margin: EdgeInsets.only(left: MARGIN_20, right: MARGIN_20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(
-              height: SIZED_BOX_HEIGHT_50,
-            ),
-            WelcomeTextView(Colors.black),
-            SizedBox(
-              height: SIZED_BOX_HEIGHT_10,
-            ),
-            LabelTextView(
-              LOGIN_SIGNIN_LABEL_TEXT,
-              LABEL_TEXT_COLOR,
-            ),
-            SizedBox(
-              height: SIZED_BOX_HEIGHT_40,
-            ),
-            TabBarSectionView(
-              tabList: tabList,
-              onTapRegisterView: (String name, String email, String phoneNumber,
-                  String password, String googleAccessToken, String facebookAccessToken) =>
-                  _registerWithEmail(name, email, phoneNumber, password, googleAccessToken, facebookAccessToken),
-              onTapLogInView: (String email, String password) =>
-                  _logInWithEmail(email, password),
-              onTapFacebookSignIn: () => _registerWithFacebook(),
-              onTapFacebookLogIn: () => _logInWithFacebook(),
-            ),
-          ],
+    return ChangeNotifierProvider(
+      create: (BuildContext context) => AuthenticationBloc(),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: false,
+        body: Container(
+          margin: EdgeInsets.only(left: MARGIN_20, right: MARGIN_20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                height: SIZED_BOX_HEIGHT_50,
+              ),
+              WelcomeTextView(Colors.black),
+              SizedBox(
+                height: SIZED_BOX_HEIGHT_10,
+              ),
+              LabelTextView(
+                LOGIN_SIGNIN_LABEL_TEXT,
+                LABEL_TEXT_COLOR,
+              ),
+              SizedBox(
+                height: SIZED_BOX_HEIGHT_40,
+              ),
+              Builder(
+                builder: (context) {
+                  AuthenticationBloc authenticationBloc =
+                      Provider.of(context, listen: false);
+                  return TabBarSectionView(
+                    tabList: tabList,
+                    onTapRegisterView: (String name,
+                            String email,
+                            String phoneNumber,
+                            String password,
+                            String googleAccessToken,
+                            String facebookAccessToken) =>
+                        authenticationBloc
+                            .registerWithEmail(
+                                name,
+                                email,
+                                phoneNumber,
+                                password,
+                                googleAccessToken,
+                                facebookAccessToken)
+                            .then((msg) {
+                      _showToast(msg ?? "", context);
+                      _navigateToHomePage(context);
+                    }),
+                    onTapLogInView: (String email, String password) =>
+                        authenticationBloc
+                            .loginWithEmail(email, password)
+                            .then((msg) {
+                      _showToast(msg ?? "", context);
+                      _navigateToHomePage(context);
+                    }),
+                    onTapFacebookSignIn: () => {},
+                    onTapFacebookLogIn: () => {},
+                  );
+                },
+              ),
+              // TabBarSectionView(
+              //   tabList: tabList,
+              //   onTapRegisterView: (String name, String email, String phoneNumber,
+              //       String password, String googleAccessToken, String facebookAccessToken) =>
+              //       _registerWithEmail(name, email, phoneNumber, password, googleAccessToken, facebookAccessToken),
+              //   onTapLogInView: (String email, String password) =>
+              //       _logInWithEmail(email, password),
+              //   onTapFacebookSignIn: () => _registerWithFacebook(),
+              //   onTapFacebookLogIn: () => _logInWithFacebook(),
+              // ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   _navigateToHomePage(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => HomePage()));
   }
 }
 
 class TabBarSectionView extends StatefulWidget {
   final List<String> tabList;
-  final Function(String name, String email, String phoneNumber, String password, String googleAccessToken, String facebookAccessToken) onTapRegisterView;
+  final Function(String name, String email, String phoneNumber, String password,
+      String googleAccessToken, String facebookAccessToken) onTapRegisterView;
   final Function(String email, String password) onTapLogInView;
 
   final Function onTapFacebookSignIn;
@@ -190,19 +146,17 @@ class TabBarSectionView extends StatefulWidget {
 
   TabBarSectionView(
       {required this.tabList,
-        required this.onTapRegisterView,
-        required this.onTapLogInView,
+      required this.onTapRegisterView,
+      required this.onTapLogInView,
       required this.onTapFacebookSignIn,
       required this.onTapFacebookLogIn});
 
   @override
-  State<TabBarSectionView> createState() =>
-      _TabBarSectionViewState();
+  State<TabBarSectionView> createState() => _TabBarSectionViewState();
 }
 
 class _TabBarSectionViewState extends State<TabBarSectionView>
     with SingleTickerProviderStateMixin {
-
   late TabController _tabController;
 
   @override
@@ -244,15 +198,18 @@ class _TabBarSectionViewState extends State<TabBarSectionView>
           child: TabBarView(
             controller: _tabController,
             children: [
-              UserInputLogInView(onTapView: widget.onTapLogInView,),
-              UserInputSignInView(onTapView: widget.onTapRegisterView,),
+              UserInputLogInView(
+                onTapView: widget.onTapLogInView,
+              ),
+              UserInputSignInView(
+                onTapView: widget.onTapRegisterView,
+              ),
             ],
           ),
         ),
       ],
     );
   }
-
 }
 
 class UserInputLogInView extends StatefulWidget {
@@ -265,9 +222,10 @@ class UserInputLogInView extends StatefulWidget {
 }
 
 class _UserInputLogInViewState extends State<UserInputLogInView> {
-
-  final TextEditingController _emailTextController = new TextEditingController();
-  final TextEditingController _passwordTextController = new TextEditingController();
+  final TextEditingController _emailTextController =
+      new TextEditingController();
+  final TextEditingController _passwordTextController =
+      new TextEditingController();
 
   String? idToken;
   String? googleToken;
@@ -318,23 +276,13 @@ class _UserInputLogInViewState extends State<UserInputLogInView> {
             height: SIZED_BOX_HEIGHT_30,
           ),
           GestureDetector(
-            onTap: () async {
-              final LoginResult loginResult = await FacebookAuth.instance.login();
-              if (loginResult.status == LoginStatus.success) {
-                final userData = await FacebookAuth.instance.getUserData(fields: 'email, name');
-                print("FacebookUserName>>> ${userData["name"].toString()}");
-                print("FacebookToken>>>> ${loginResult.accessToken.toString()}");
-              } else {
-                print("LoginStatus>>> ${loginResult.status}");
-                print("Message>>>> ${loginResult.message}");
-                print("FacebookToken>>>> ${loginResult.accessToken}");
-              }
-              cinemaModel.logInWithFacebook(loginResult.accessToken.toString()).then((value) {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => HomePage()));
-              });
+            onTap: () {
+               AuthenticationBloc authenticationBloc = Provider.of(context, listen: false);
+               authenticationBloc.loginWithFacebook().then((value) {
+                 Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+             });
             },
-            child:  IconAndTextInRowView(
+            child: IconAndTextInRowView(
               Image.asset(
                 'assets/images/facebook.png',
                 height: FACEBOOK_IMAGE_HEIGHT,
@@ -346,38 +294,33 @@ class _UserInputLogInViewState extends State<UserInputLogInView> {
           SizedBox(
             height: SIZED_BOX_HEIGHT_20,
           ),
-          GestureDetector(
-            onTap: () {
-              GoogleSignIn().signIn().then((value) {
-                idToken = value?.id ?? "";
-                print("GoogleId>> $idToken");
-                value?.authentication.then((data) {
-                  setState(() {
-                    googleToken = data.idToken;
-                    print("GoogleToken>>> $googleToken");
-                    _emailTextController.text = value.email;
-                  });
-                  cinemaModel.logInWithGoogle(googleToken ?? "1212").then((value) {
-                    Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => HomePage()));
-                  }).catchError((error) => debugPrint(error.toString()));
-                }).catchError((error) => debugPrint((error.toString())));
-              });
+          Selector<AuthenticationBloc, String?>(
+            selector: (context, bloc) => bloc.email,
+            builder: (BuildContext context, email, Widget? child) {
+              return GestureDetector(
+                onTap: () {
+                  AuthenticationBloc authenticationBloc = Provider.of(context, listen: false);
+                  _emailTextController.text = email ?? "";
+                  authenticationBloc.loginWithGoogle();
+                },
+                child: IconAndTextInRowView(
+                    Image.asset(
+                      'assets/images/google.png',
+                      height: GOOGLE_IMAGE_HEIGHT,
+                      width: GOOGLE_IMAGE_WIDTH,
+                    ),
+                    "Sign in with google"),
+              );
             },
-            child: IconAndTextInRowView(
-                Image.asset(
-                  'assets/images/google.png',
-                  height: GOOGLE_IMAGE_HEIGHT,
-                  width: GOOGLE_IMAGE_WIDTH,
-                ),
-                "Sign in with google"),
           ),
           SizedBox(
             height: SIZED_BOX_HEIGHT_20,
           ),
           GestureDetector(
-            onTap: () =>
-                widget.onTapView(_emailTextController.text, _passwordTextController.text),
+            onTap: () {
+              widget.onTapView(
+                  _emailTextController.text, _passwordTextController.text);
+            },
             child: Container(
               height: LOGIN_SIGNIN_PAGE_CONTAINER_HEIGHT,
               decoration: BoxDecoration(
@@ -404,8 +347,8 @@ class _UserInputLogInViewState extends State<UserInputLogInView> {
 }
 
 class UserInputSignInView extends StatefulWidget {
-
-  final Function(String name, String email, String phoneNumber, String password, String googleAccessToken, String facebookAccessToken) onTapView;
+  final Function(String name, String email, String phoneNumber, String password,
+      String googleAccessToken, String facebookAccessToken) onTapView;
 
   UserInputSignInView({required this.onTapView});
 
@@ -414,13 +357,16 @@ class UserInputSignInView extends StatefulWidget {
 }
 
 class _UserInputSignInViewState extends State<UserInputSignInView> {
-  final TextEditingController _emailTextController = new TextEditingController();
+  final TextEditingController _emailTextController =
+      new TextEditingController();
 
   final TextEditingController _nameTextController = new TextEditingController();
 
-  final TextEditingController _phoneNumberTextController = new TextEditingController();
+  final TextEditingController _phoneNumberTextController =
+      new TextEditingController();
 
-  final TextEditingController _passwordTextController = new TextEditingController();
+  final TextEditingController _passwordTextController =
+      new TextEditingController();
 
   String? idToken;
   String? googleToken;
@@ -501,64 +447,32 @@ class _UserInputSignInViewState extends State<UserInputSignInView> {
                 height: SIZED_BOX_HEIGHT_30,
               ),
               GestureDetector(
-                onTap: () async{
-                  final LoginResult loginResult = await FacebookAuth.instance.login();
-                  if (loginResult.status == LoginStatus.success) {
-                    final userData = await FacebookAuth.instance.getUserData();
-                    setState(() {
-                      _nameTextController.text = userData["name"].toString();
-                      _emailTextController.text = userData["email"] ?? "";
-                      facebookToken = loginResult.accessToken.toString();
-
-                      print("FacebookToken>>> $facebookToken");
-                    });
-                  } else {
-                    print("LoginStatus>>> ${loginResult.status}");
-                    print("Message>>>> ${loginResult.message}");
-                  }
+                onTap: () {
+                    AuthenticationBloc authenticationBloc = Provider.of(context, listen: false);
+                    _nameTextController.text = authenticationBloc.name ?? "";
+                    _emailTextController.text = authenticationBloc.email ?? "";
+                    facebookToken = authenticationBloc.facebookToken ?? "";
+                    authenticationBloc.registerWithFacebook();
                 },
-                  child: IconAndTextInRowView(
-                    Image.asset(
-                      'assets/images/facebook.png',
-                      height: FACEBOOK_IMAGE_HEIGHT,
-                      width: FACEBOOK_IMAGE_WIDTH,
-                    ),
-                    "Sign in with facebook",
+                child: IconAndTextInRowView(
+                  Image.asset(
+                    'assets/images/facebook.png',
+                    height: FACEBOOK_IMAGE_HEIGHT,
+                    width: FACEBOOK_IMAGE_WIDTH,
                   ),
+                  "Sign in with facebook",
+                ),
               ),
               SizedBox(
                 height: SIZED_BOX_HEIGHT_20,
               ),
-              // GestureDetector(
-              //   onTap: () => widget.onTapGoogleSignIn(),
-              //   child: IconAndTextInRowView(
-              //       Image.asset(
-              //         'assets/images/google.png',
-              //         height: GOOGLE_IMAGE_HEIGHT,
-              //         width: GOOGLE_IMAGE_WIDTH,
-              //       ),
-              //       "Sign in with google"),
-              // ),
               GestureDetector(
                 onTap: () {
-                  GoogleSignIn googleSignIn = GoogleSignIn(
-                    scopes: [
-                      "email",
-                      "https://www.googleapis.com/auth/contacts.readonly",
-                    ],
-                  );
-                  googleSignIn.signIn().then((googleAccount) {
-                    googleAccount?.authentication.then((authentication) {
-                      setState(() {
-                        _nameTextController.text = googleAccount.displayName ?? "";
-                        _emailTextController.text = googleAccount.email;
-                        idToken = googleAccount.id;
-                        googleAccount.authentication.then((data) {
-                          googleToken = data.idToken;
-                        }).catchError((error) => debugPrint(error.toString()));
-                      });
-                    }).catchError((error) => debugPrint(error.toString()));
-                  });
+                   AuthenticationBloc authenticationBloc = Provider.of(context, listen: false);
+                   _nameTextController.text = authenticationBloc.name ?? "";
+                   _emailTextController.text = authenticationBloc.email ?? "";
+                   googleToken = authenticationBloc.googleToken ?? "";
+                   authenticationBloc.registerWithGoogle();
                 },
                 child: IconAndTextInRowView(
                     Image.asset(
@@ -575,8 +489,17 @@ class _UserInputSignInViewState extends State<UserInputSignInView> {
                 height: SIZED_BOX_HEIGHT_20,
               ),
               GestureDetector(
-                onTap: () =>
-                    widget.onTapView(_nameTextController.text, _emailTextController.text, _phoneNumberTextController.text, _passwordTextController.text, "1212", "78987"),
+                onTap: () {
+                  AuthenticationBloc authenticationBloc = Provider.of(context, listen: false);
+                  widget.onTapView(
+                      _nameTextController.text,
+                      _emailTextController.text,
+                      _phoneNumberTextController.text,
+                      _passwordTextController.text,
+                      authenticationBloc.googleToken ?? "",
+                    authenticationBloc.facebookToken ?? "",
+                  );
+                },
                 child: Container(
                   height: LOGIN_SIGNIN_PAGE_CONTAINER_HEIGHT,
                   decoration: BoxDecoration(
@@ -609,7 +532,10 @@ class SignInMethodView extends StatelessWidget {
   final Function onTapGoogleSignIn;
   final Function onTapFacebookSignIn;
 
-  SignInMethodView({required this.onTapView, required this.onTapGoogleSignIn, required this.onTapFacebookSignIn});
+  SignInMethodView(
+      {required this.onTapView,
+      required this.onTapGoogleSignIn,
+      required this.onTapFacebookSignIn});
 
   @override
   Widget build(BuildContext context) {
@@ -723,3 +649,209 @@ class IconAndTextInRowView extends StatelessWidget {
     );
   }
 }
+
+/*
+class LogInSignInPage extends StatefulWidget {
+  @override
+  State<LogInSignInPage> createState() => _LogInSignInPageState();
+}
+
+class _LogInSignInPageState extends State<LogInSignInPage> {
+  final List<String> tabList = ["Log In", "Sign In"];
+
+  CinemaModel cinemaModel = CinemaModelImpl();
+
+  String? name;
+  String? email;
+  String? googleToken;
+  String? facebookToken;
+
+  _registerWithEmail(String name, String email, String phoneNumber,
+      String password, String googleAccessToken, String facebookAccessToken) {
+    cinemaModel
+        .registerWithEmail(name, email, phoneNumber, password,
+        googleAccessToken, facebookAccessToken)
+        .then((successMsg) {
+      _showToast("SignIn Successful!");
+      _navigateToHomePage(context);
+    }).catchError((error) {
+      handleError(context, error);
+    });
+  }
+
+  _logInWithEmail(String email, String password) {
+    cinemaModel.logInWithEmail(email, password).then((successMsg) {
+      _showToast("LogIn Successful!");
+      _navigateToHomePage(context);
+    }).catchError((error) {
+      handleError(context, error);
+    });
+  }
+
+  _registerWithGoogle() {
+    GoogleSignIn googleSignIn = GoogleSignIn(
+      scopes: [
+        "email",
+        "https://www.googleapis.com/auth/contacts.readonly",
+      ],
+    );
+    googleSignIn.signIn().then((googleAccount) {
+      googleAccount?.authentication.then((authentication) {
+        setState(() {
+          name = googleAccount.displayName;
+          email = googleAccount.email;
+          googleToken = googleAccount.id;
+        });
+      });
+    });
+  }
+
+  _registerWithFacebook() async {
+    final LoginResult loginResult = await FacebookAuth.instance.login();
+    if (loginResult.status == LoginStatus.success) {
+      final userData = await FacebookAuth.instance.getUserData();
+      setState(() {
+        name = userData["name"].toString();
+        email = userData["email"].toString();
+        facebookToken = loginResult.accessToken?.userId;
+
+        print("FacebookUserName>>> ${userData["name"].toString()}");
+      });
+    } else {
+      print("LoginStatus>>> ${loginResult.status}");
+      print("Message>>>> ${loginResult.message}");
+    }
+  }
+
+  _logInWithGoogle() {
+    cinemaModel.logInWithGoogle(googleToken ?? "").then((user) {
+      if (user != null) {
+        _navigateToHomePage(context);
+      }
+    }).catchError((error) => debugPrint(error.toString()));
+  }
+
+  _logInWithFacebook() {
+    cinemaModel.logInWithFacebook(facebookToken ?? "").then((user) {
+      if (user != null) {
+        _navigateToHomePage(context);
+      }
+    }).catchError((error) => debugPrint(error.toString()));
+  }
+
+  _showToast(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(text),
+    ));
+  }
+
+  void handleError(BuildContext context, dynamic error) {
+    if (error is DioError) {
+      try {
+        ErrorResponse errorResponse =
+        ErrorResponse.fromJson(error.response!.data);
+        showErrorAlert(context, errorResponse.message.toString());
+      } on Error catch (e) {
+        showErrorAlert(context, e.toString());
+      }
+    } else {
+      showErrorAlert(context, error.toString());
+    }
+  }
+
+  void showErrorAlert(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+    ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (BuildContext context) => AuthenticationBloc(),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: false,
+        body: Container(
+          margin: EdgeInsets.only(left: MARGIN_20, right: MARGIN_20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                height: SIZED_BOX_HEIGHT_50,
+              ),
+              WelcomeTextView(Colors.black),
+              SizedBox(
+                height: SIZED_BOX_HEIGHT_10,
+              ),
+              LabelTextView(
+                LOGIN_SIGNIN_LABEL_TEXT,
+                LABEL_TEXT_COLOR,
+              ),
+              SizedBox(
+                height: SIZED_BOX_HEIGHT_40,
+              ),
+              Builder(
+                builder: (context) {
+                  AuthenticationBloc authenticationBloc =
+                  Provider.of(context, listen: false);
+                  return TabBarSectionView(
+                    tabList: tabList,
+                    onTapRegisterView: (String name,
+                        String email,
+                        String phoneNumber,
+                        String password,
+                        String googleAccessToken,
+                        String facebookAccessToken) =>
+                        authenticationBloc
+                            .registerWithEmail(
+                            name,
+                            email,
+                            phoneNumber,
+                            password,
+                            googleAccessToken,
+                            facebookAccessToken)
+                            .then((msg) {
+                          _showToast(msg ?? "");
+                          _navigateToHomePage(context);
+                        }),
+                    onTapLogInView: (String email, String password) =>
+                        authenticationBloc
+                            .loginWithEmail(email, password)
+                            .then((msg) {
+                          _showToast(msg ?? "");
+                          _navigateToHomePage(context);
+                        }),
+                    onTapFacebookSignIn: () =>
+                        authenticationBloc.registerWithFacebook(),
+                    onTapFacebookLogIn: () =>
+                        authenticationBloc.loginWithFacebook().then((msg) {
+                          _showToast(msg ?? "");
+                          _navigateToHomePage(context);
+                        }),
+                  );
+                },
+              ),
+              // TabBarSectionView(
+              //   tabList: tabList,
+              //   onTapRegisterView: (String name, String email, String phoneNumber,
+              //       String password, String googleAccessToken, String facebookAccessToken) =>
+              //       _registerWithEmail(name, email, phoneNumber, password, googleAccessToken, facebookAccessToken),
+              //   onTapLogInView: (String email, String password) =>
+              //       _logInWithEmail(email, password),
+              //   onTapFacebookSignIn: () => _registerWithFacebook(),
+              //   onTapFacebookLogIn: () => _logInWithFacebook(),
+              // ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  _navigateToHomePage(BuildContext context) {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => HomePage()));
+  }
+}*/

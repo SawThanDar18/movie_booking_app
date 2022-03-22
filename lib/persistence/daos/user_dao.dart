@@ -21,7 +21,9 @@ class UserDao {
   }
 
   String? getUserToken() {
-    return getUsers()[0].token;
+    if (getUsers().isNotEmpty) {
+      return getUsers()[0].token;
+    }
   }
 
   List<UserVO> getUsers() {

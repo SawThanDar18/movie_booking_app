@@ -1,7 +1,7 @@
 import 'package:barcode_widget/barcode_widget.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:movie_booking_app/blocs/ticket_bloc.dart';
 import 'package:movie_booking_app/data/vos/cinema/user_booking_vo.dart';
 import 'package:movie_booking_app/network/api_constants.dart';
 import 'package:movie_booking_app/pages/home_page.dart';
@@ -11,8 +11,9 @@ import 'package:movie_booking_app/widgets/dash_view.dart';
 import 'package:movie_booking_app/widgets/text_row_view.dart';
 import 'package:movie_booking_app/widgets/text_view.dart';
 import 'package:movie_booking_app/widgets/title_and_label_text_view.dart';
+import 'package:provider/provider.dart';
 
-class TicketPage extends StatefulWidget {
+class TicketPage extends StatelessWidget {
   final String movieName;
   final String moviePoster;
   final String cinemaName;
@@ -21,58 +22,53 @@ class TicketPage extends StatefulWidget {
   TicketPage({required this.movieName, required this.moviePoster, required this.cinemaName, required this.userBooking});
 
   @override
-  State<TicketPage> createState() => _TicketPageState();
-}
-
-class _TicketPageState extends State<TicketPage> {
-  UserBookingVO? userBookingVO;
-
-  @override
-  void initState() {
-
-    userBookingVO = widget.userBooking;
-
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: TICKET_PAGE_BACKGROUND_COLOR,
-      appBar: AppBar(
+    return ChangeNotifierProvider(
+      create: (BuildContext context) => TicketBloc(userBooking),
+      child: Scaffold(
         backgroundColor: TICKET_PAGE_BACKGROUND_COLOR,
-        elevation: 0.0,
-        leading: GestureDetector(
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
-          },
-          child: Container(
-            margin: EdgeInsets.only(top: MARGIN_20, left: MARGIN_20),
-            child: Icon(
-              Icons.clear,
-              color: Colors.black,
-              size: CLEAR_ICON_SIZE,
+        appBar: AppBar(
+          backgroundColor: TICKET_PAGE_BACKGROUND_COLOR,
+          elevation: 0.0,
+          leading: GestureDetector(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+            },
+            child: Container(
+              margin: EdgeInsets.only(top: MARGIN_20, left: MARGIN_20),
+              child: Icon(
+                Icons.clear,
+                color: Colors.black,
+                size: CLEAR_ICON_SIZE,
+              ),
             ),
           ),
         ),
-      ),
-      body: Container(
-        color: TICKET_PAGE_BACKGROUND_COLOR,
-        margin: EdgeInsets.only(top: MARGIN_10),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TitleAndLabelTextView("Awesome!", "This is your ticket."),
-              ImageAndTitleContainerView(movieTitle: widget.movieName, moviePoster: widget.moviePoster,),
-              DashLineView(),
-              TicketInfoView(userBookingVO: userBookingVO, cinemaName: widget.cinemaName),
-              DashLineView(),
-              BarCodeView(),
-              SizedBox(
-                height: SIZED_BOX_HEIGHT_50,
-              ),
-            ],
+        body: Container(
+          color: TICKET_PAGE_BACKGROUND_COLOR,
+          margin: EdgeInsets.only(top: MARGIN_10),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TitleAndLabelTextView("Awesome!", "This is your ticket."),
+                ImageAndTitleContainerView(movieTitle: movieName, moviePoster: moviePoster,),
+                DashLineView(),
+                Selector<TicketBloc, UserBookingVO?>(
+                  selector: (context, bloc) => bloc.userBookingVO,
+                  builder:
+                      (BuildContext context, userBookingVO,
+                      Widget? child) {
+                    return TicketInfoView(userBookingVO: userBookingVO, cinemaName: cinemaName);
+                  },
+                ),
+                DashLineView(),
+                BarCodeView(),
+                SizedBox(
+                  height: SIZED_BOX_HEIGHT_50,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -277,3 +273,81 @@ class ImageAndTitleContainerView extends StatelessWidget {
     );
   }
 }
+
+/*class TicketPage extends StatefulWidget {
+  final String movieName;
+  final String moviePoster;
+  final String cinemaName;
+  final UserBookingVO userBooking;
+
+  TicketPage({required this.movieName, required this.moviePoster, required this.cinemaName, required this.userBooking});
+
+  @override
+  State<TicketPage> createState() => _TicketPageState();
+}
+
+class _TicketPageState extends State<TicketPage> {
+  UserBookingVO? userBookingVO;
+
+  @override
+  void initState() {
+
+    userBookingVO = widget.userBooking;
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (BuildContext context) => TicketBloc(userBookingVO),
+      child: Scaffold(
+        backgroundColor: TICKET_PAGE_BACKGROUND_COLOR,
+        appBar: AppBar(
+          backgroundColor: TICKET_PAGE_BACKGROUND_COLOR,
+          elevation: 0.0,
+          leading: GestureDetector(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+            },
+            child: Container(
+              margin: EdgeInsets.only(top: MARGIN_20, left: MARGIN_20),
+              child: Icon(
+                Icons.clear,
+                color: Colors.black,
+                size: CLEAR_ICON_SIZE,
+              ),
+            ),
+          ),
+        ),
+        body: Container(
+          color: TICKET_PAGE_BACKGROUND_COLOR,
+          margin: EdgeInsets.only(top: MARGIN_10),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TitleAndLabelTextView("Awesome!", "This is your ticket."),
+                ImageAndTitleContainerView(movieTitle: widget.movieName, moviePoster: widget.moviePoster,),
+                DashLineView(),
+                Selector<TicketBloc, UserBookingVO?>(
+                  selector: (context, bloc) => bloc.userBookingVO,
+                  builder:
+                      (BuildContext context, userBookingVO,
+                      Widget? child) {
+                    return TicketInfoView(userBookingVO: userBookingVO, cinemaName: widget.cinemaName);
+                  },
+                ),
+                DashLineView(),
+                BarCodeView(),
+                SizedBox(
+                  height: SIZED_BOX_HEIGHT_50,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}*/

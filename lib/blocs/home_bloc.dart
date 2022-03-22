@@ -6,7 +6,7 @@ import 'package:movie_booking_app/data/models/cinema_model_impl.dart';
 import 'package:movie_booking_app/data/vos/cinema/snacks_vo.dart';
 import 'package:movie_booking_app/data/vos/movies/genre_vo.dart';
 import 'package:movie_booking_app/data/vos/movies/movie_vo.dart';
-import 'package:movie_booking_app/pages/splash_page.dart';
+import 'package:movie_booking_app/data/vos/users/user_vo.dart';
 
 class HomeBloc extends ChangeNotifier{
 
@@ -17,17 +17,13 @@ class HomeBloc extends ChangeNotifier{
   List<SnacksVO>? snacksList;
   List<GenreVO>? genres;
 
-  String? name;
-  String? email;
-  String? token;
+  List<UserVO>? users;
 
   HomeBloc() {
 
     cinemaModel.getUsersFromDatabase().listen((user) {
-        name = user[0].name;
-        email = user[0].email;
-        token = user[0].token;
-        print("userToken>> $token");
+      users = user;
+      notifyListeners();
     }).onError((error) => debugPrint(error));
 
     cinemaModel.getNowPlayingMoviesFromDatabase().listen((movieList) {
@@ -58,18 +54,18 @@ class HomeBloc extends ChangeNotifier{
       debugPrint(error.toString());
     });
 
-    cinemaModel.getSnacksFromDatabase().listen((snacksList) {
-        this.snacksList = snacksList;
-        notifyListeners();
-        print("SnacksList>> ${snacksList?.length}");
-    }).onError((error) => debugPrint(error.toString()));
+    cinemaModel.getSnacks();
+
+    // cinemaModel.getSnacksFromDatabase().listen((snacksList) {
+    //     this.snacksList = snacksList;
+    //     notifyListeners();
+    //     print("SnacksList>> ${snacksList?.length}");
+    // }).onError((error) => debugPrint(error.toString()));
 
   }
 
-  _userLogOut(BuildContext context) {
-    cinemaModel.userLogOut().then((value) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => SplashPage()));
-    });
+  Future<String?> onTapLogOut() {
+    return cinemaModel.userLogOut();
   }
 
 }
