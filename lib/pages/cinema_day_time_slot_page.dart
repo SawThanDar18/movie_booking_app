@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_calendar_week/calendar_week.dart';
+import 'package:flutter_calendar_week/flutter_calendar_week.dart';
 import 'package:movie_booking_app/blocs/day_time_slots_bloc.dart';
 import 'package:movie_booking_app/data/vos/cinema/date_vo.dart';
 import 'package:movie_booking_app/data/vos/cinema/day_time_slots_vo.dart';
@@ -49,6 +49,7 @@ class CinemaDayTimeSlotPage extends StatelessWidget {
                   shouldRebuild: (previous, next) => previous != next,
                   builder: (BuildContext context, dayTimeSlots, Widget? child) {
                     return  TimeSlotsItemView(
+                      key: Key("13"),
                       dayTimeSlots: dayTimeSlots ?? [],
                       onTapView: (int timeSlotId, String time, String cinemaName,
                           int cinemaId) {
@@ -106,7 +107,7 @@ class TimeSlotsItemView extends StatefulWidget {
   final Function(int timeSlotId, String time, String cinemaName, int cinemaId)
       onTapView;
 
-  TimeSlotsItemView({required this.dayTimeSlots, required this.onTapView});
+  TimeSlotsItemView({Key? key, required this.dayTimeSlots, required this.onTapView}) : super(key: key);
 
   @override
   State<TimeSlotsItemView> createState() => _TimeSlotsItemViewState();
@@ -175,6 +176,9 @@ class _TimeSlotsItemViewState extends State<TimeSlotsItemView> {
                                   timeSlotId = dayTimeLists[dayTimeSlotsIndex]
                                       .timeSlots[timeSlotIndex]
                                       ?.dayTimeSlotsId;
+                                  print("timeSlotIIDDD>>>${dayTimeLists[dayTimeSlotsIndex]
+                                      .timeSlots[timeSlotIndex]
+                                      ?.dayTimeSlotsId}");
                                   time = dayTimeLists[dayTimeSlotsIndex]
                                       .timeSlots[timeSlotIndex]
                                       ?.startTime;
@@ -429,9 +433,9 @@ class _CalendarViewState extends State<CalendarView> {
           Duration(days: 365),
         ),
         dayOfWeekStyle: TextStyle(color: Colors.grey),
-        dayOfWeekAlignment: FractionalOffset.bottomCenter,
+        //dayOfWeekAlignment: FractionalOffset.bottomCenter,
         dateStyle: TextStyle(color: Colors.grey),
-        dateAlignment: FractionalOffset.topCenter,
+        //dateAlignment: FractionalOffset.topCenter,
         todayDateStyle: TextStyle(
             color: SPLASH_SCREEN_BACKGROUND_COLOR, fontWeight: FontWeight.bold),
         pressedDateBackgroundColor: Colors.white,

@@ -59,6 +59,7 @@ class CheckOutPage extends StatelessWidget {
         body: Container(
           margin: EdgeInsets.all(MARGIN_20),
           child: SingleChildScrollView(
+            key: Key("SCROLL_PAYMENT_KEY"),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -71,10 +72,12 @@ class CheckOutPage extends StatelessWidget {
                     return  SelectComboSetView(
                       snacks: snacks,
                       onTapIncrease: (snack) {
+                        Key("Snacks ${snack.id}");
                         SnacksBloc snacksBloc = Provider.of(context, listen: false);
                         snacksBloc.onTapIncrease(snack);
                       },
                       onTapDecrease: (snack) {
+                        Key("${snack.id}");
                         SnacksBloc snacksBloc = Provider.of(context, listen: false);
                         snacksBloc.onTapDecrease(snack);
                       },
@@ -117,6 +120,7 @@ class CheckOutPage extends StatelessWidget {
                       shouldRebuild: (previous, next) => previous != next,
                       builder: (BuildContext context, selectPaymentId, Widget? child) {
                         return  PaymentMethodView(
+                          key: Key("2"),
                             paymentMethods: paymentMethods,
                             onTapView: (selectPaymentId) {
                               SnacksBloc snacksBloc = Provider.of(context, listen: false);
@@ -219,7 +223,7 @@ class PaymentMethodView extends StatelessWidget {
   final List<PaymentVO>? paymentMethods;
   final Function(int) onTapView;
 
-  PaymentMethodView({required this.paymentMethods, required this.onTapView});
+  PaymentMethodView({Key? key, required this.paymentMethods, required this.onTapView}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -244,7 +248,7 @@ class CardRowView extends StatefulWidget {
   final PaymentVO? paymentMethod;
   final Function(int) onTapView;
 
-  CardRowView({required this.paymentMethod, required this.onTapView});
+  CardRowView({Key? key, required this.paymentMethod, required this.onTapView}) : super(key: key);
 
   @override
   State<CardRowView> createState() => _CardRowViewState();
@@ -566,6 +570,7 @@ class _IncreaseAndDecreaseViewState extends State<IncreaseAndDecreaseView> {
                 });
               },
               child: Center(
+                key: Key("Snacks ${widget.snack.id}"),
                 child: Icon(
                   Icons.add,
                   size: CHECK_OUT_PAGE_ICON_SIZE,

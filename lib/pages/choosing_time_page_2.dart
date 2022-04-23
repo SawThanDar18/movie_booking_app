@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_calendar_week/calendar_week.dart';
+import 'package:flutter_calendar_week/flutter_calendar_week.dart';
 import 'package:movie_booking_app/resources/colors.dart';
 import 'package:movie_booking_app/resources/dimens.dart';
 import 'package:movie_booking_app/widgets/floating_button_view.dart';
@@ -197,9 +197,9 @@ class SliverAppBarView extends StatelessWidget {
                         Duration(days: 365),
                       ),
                       dayOfWeekStyle: TextStyle(color: Colors.grey),
-                      dayOfWeekAlignment: FractionalOffset.bottomCenter,
+                      //dayOfWeekAlignment: FractionalOffset.bottomCenter,
                       dateStyle: TextStyle(color: Colors.grey),
-                      dateAlignment: FractionalOffset.topCenter,
+                      //dateAlignment: FractionalOffset.topCenter,
                       todayDateStyle: TextStyle(
                           color: SPLASH_SCREEN_BACKGROUND_COLOR,
                           fontWeight: FontWeight.bold),

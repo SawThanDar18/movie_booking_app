@@ -88,7 +88,7 @@ class _MyAppState extends State<MyApp> {
       });
     }).onError((error) => debugPrint(error.toString()));
 
-    cinemaModel.getSnacks();
+    //cinemaModel.getSnacks();
 
     super.initState();
   }

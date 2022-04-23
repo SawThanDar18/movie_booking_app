@@ -12,10 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_rating_bar: ^4.0.0
-  flutter_calendar_week:
-    git:
-      url: https://github.com/mduccc/flutter_calendar_week
-      ref: 0.1.0
+  flutter_calendar_week: ^2.1.0
   barcode_widget: ^2.0.2
   carousel_slider: ^4.0.0
   cupertino_icons: ^1.0.2
@@ -26,11 +23,11 @@ dependencies:
   retrofit: ^3.0.1
   hive: ^2.0.5
   hive_flutter: ^1.1.0
-  cached_network_image: ^2.5.1
+  flutter_cache_manager: ^3.3.0
+  cached_network_image: ^3.0.0
   date_format: ^2.0.5
   google_sign_in: ^5.2.3
   flutter_facebook_auth: ^4.0.1
-  flutter_facebook_login: ^3.0.0
   intl: ^0.17.0
   stream_transform: ^2.0.0
   provider: ^6.0.2
@@ -40,6 +37,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   integration_test:
+    sdk: flutter
+  flutter_driver:
     sdk: flutter
   build_runner:
   retrofit_generator: ^4.0.0

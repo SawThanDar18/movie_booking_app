@@ -61,6 +61,7 @@ class SeatingChartPage extends StatelessWidget {
           margin: EdgeInsets.only(top: MARGIN_16),
           child: SingleChildScrollView(
             child: Column(
+              key: Key("SCROLL_BOTTOM_KEY"),
               children: [
                 TitleAndLabelTextView(
                   movieTitle,
@@ -246,6 +247,7 @@ class MovieSeatsSectionView extends StatelessWidget {
       ),
       itemBuilder: (context, index) {
         return MovieSeatsItemView(
+          key: Key("$index"),
           seatsVO: seats?[index],
           onTapView: (SeatsVO seatsVO) {
             this.onTapView(seatsVO);
@@ -257,11 +259,12 @@ class MovieSeatsSectionView extends StatelessWidget {
   }
 }
 
+
 class MovieSeatsItemView extends StatefulWidget {
   final SeatsVO? seatsVO;
   final Function(SeatsVO seatsVO) onTapView;
 
-  MovieSeatsItemView({required this.seatsVO, required this.onTapView});
+  MovieSeatsItemView({Key? key, required this.seatsVO, required this.onTapView}) :  super(key: key);
 
   @override
   State<MovieSeatsItemView> createState() => _MovieSeatsItemViewState();

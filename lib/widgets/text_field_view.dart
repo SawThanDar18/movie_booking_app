@@ -10,7 +10,7 @@ class TextFieldView extends StatefulWidget {
   final TextEditingController textEditingController;
 
   TextFieldView(
-      {required this.hintText, required this.textInputType, required this.textStyle, required this.textEditingController, this.obsecureText = false});
+      {Key? key, required this.hintText, required this.textInputType, required this.textStyle, required this.textEditingController, this.obsecureText = false}) : super(key: key);
 
   @override
   State<TextFieldView> createState() => _TextFieldViewState();

@@ -1,36 +1,14 @@
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:movie_booking_app/data/vos/users/card_vo.dart';
-import 'package:movie_booking_app/persistence/hive_constants.dart';
 
-class CardDao {
-  
-  static final CardDao _singleton = CardDao._internal();
+abstract class CardDao {
 
-  factory CardDao() {
-    return _singleton;
-  }
+  Stream<void> getAllCardEventStream();
 
-  CardDao._internal();
+  Stream<List<CardVO>> getCardStream();
 
-  Stream<void> getAllCardEventStream() {
-    return getCardBox().watch();
-  }
+  void saveAllCards(List<CardVO>? cardList);
 
-  Stream<List<CardVO>> getCardStream() {
-    return Stream.value(getAllCards().toList());
-  }
+  List<CardVO> getAllCards();
 
-  void saveAllCards(List<CardVO>? cardList) async {
-    Map<int, CardVO> cardMap = Map.fromIterable(cardList ?? [], key: (card) => card.id, value: (card) => card);
-    await getCardBox().putAll(cardMap);
-  }
-
-  List<CardVO> getAllCards() {
-    return getCardBox().values.toList();
-  }
-
-  Box<CardVO> getCardBox() {
-    return Hive.box<CardVO>(BOX_NAME_CARD_VO);
-  }
 
 }

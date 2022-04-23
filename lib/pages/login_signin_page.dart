@@ -3,8 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:movie_booking_app/blocs/authentication_bloc.dart';
 import 'package:movie_booking_app/data/models/cinema_model.dart';
 import 'package:movie_booking_app/data/models/cinema_model_impl.dart';
@@ -240,6 +238,7 @@ class _UserInputLogInViewState extends State<UserInputLogInView> {
         children: [
           TextFieldLabelView("Email"),
           TextFieldView(
+            key: Key("USER_NAME_KEY"),
             hintText: "LilyJohnson@gmail.com",
             textInputType: TextInputType.emailAddress,
             textStyle: TextStyle(
@@ -253,6 +252,7 @@ class _UserInputLogInViewState extends State<UserInputLogInView> {
           ),
           TextFieldLabelView("Password"),
           TextFieldView(
+            key: Key("PASSWORD_KEY"),
             hintText: "................",
             textInputType: TextInputType.text,
             textStyle: TextStyle(

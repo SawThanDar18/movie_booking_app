@@ -17,6 +17,8 @@ import 'package:movie_booking_app/persistence/daos/actor_dao.dart';
 import 'package:movie_booking_app/persistence/daos/card_dao.dart';
 import 'package:movie_booking_app/persistence/daos/cinema_day_time_dao.dart';
 import 'package:movie_booking_app/persistence/daos/genre_dao.dart';
+import 'package:movie_booking_app/persistence/daos/impl/actor_dao_impl.dart';
+import 'package:movie_booking_app/persistence/daos/impl/card_dao_impl.dart';
 import 'package:movie_booking_app/persistence/daos/movie_dao.dart';
 import 'package:movie_booking_app/persistence/daos/payment_dao.dart';
 import 'package:movie_booking_app/persistence/daos/snacks_dao.dart';
@@ -34,14 +36,26 @@ class CinemaModelImpl extends CinemaModel {
 
   CinemaDataAgent _dataAgent = RetrofitCinemaDataAgentImpl();
 
+  ActorDao actorDao = ActorDaoImpl();
   UserDao userDao = UserDao();
-  MovieDao movieDao = MovieDao();
-  GenreDao genreDao = GenreDao();
-  ActorDao actorDao = ActorDao();
-  SnacksDao snacksDao = SnacksDao();
-  PaymentDao paymentDao = PaymentDao();
+  CardDao cardDao = CardDaoImpl();
   CinemaDayTimeDao cinemaDayTimeDao = CinemaDayTimeDao();
-  CardDao cardDao = CardDao();
+  MovieDao movieDao = MovieDao();
+  PaymentDao paymentDao = PaymentDao();
+  SnacksDao snacksDao = SnacksDao();
+
+  GenreDao genreDao = GenreDao();
+
+  void setDaosAndDataAgents(ActorDao actorDao, UserDao userDao, CardDao cardDao, CinemaDayTimeDao cinemaDayTimeDao, MovieDao movieDao, PaymentDao paymentDao, SnacksDao snacksDao, CinemaDataAgent cinemaDataAgent) {
+    this.actorDao = actorDao;
+    this.userDao = userDao;
+    this.cardDao = cardDao;
+    this.cinemaDayTimeDao = cinemaDayTimeDao;
+    this.movieDao = movieDao;
+    this.paymentDao = paymentDao;
+    this.snacksDao = snacksDao;
+    this._dataAgent = cinemaDataAgent;
+  }
 
   @override
   Future<String?> registerWithEmail(
@@ -277,7 +291,7 @@ class CinemaModelImpl extends CinemaModel {
 
   @override
   Future<UserBookingVO?> checkOut(CheckOutVO checkOut) {
-    return _dataAgent.checkOut("Bearer ${userDao.getUserToken()}", checkOut);
+    return _dataAgent.checkOut("Bearer 4708|e1BiJUaGxFjhlEwRgzmS36zW0C5Evn7F8wCpLdiH", checkOut);
   }
 
   @override

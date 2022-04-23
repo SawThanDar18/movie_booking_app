@@ -110,6 +110,15 @@ class PaymentPage extends StatelessWidget {
           builder: (context) => FloatingButtonView(
             onTapView: () {
               PaymentBloc paymentBloc = Provider.of(context, listen: false);
+              print("t $timeSlotId");
+              print("t $seatRow");
+              print("t $seatName");
+              print("t $bookingDate");
+              print("t $totalPrice");
+              print("t $movieId");
+              print("t $cardId");
+              print("t $cinemaId");
+              print("t $boughtSnacks");
               paymentBloc.checkout(timeSlotId, seatRow, seatName, bookingDate, totalPrice, movieId, cardId, cinemaId, boughtSnacks).then((value) {
                 _navigateToTicketPage(context);
               }).catchError((error) {

@@ -25,8 +25,8 @@ class MovieDetailsPage extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (BuildContext context) => MovieDetailsBloc(movieId),
       child: Scaffold(
-        body: Selector<MovieDetailsBloc, MovieVO>(
-            selector: (context, bloc) => bloc.movieDetails!,
+        body: Selector<MovieDetailsBloc, MovieVO?>(
+            selector: (context, bloc) => bloc.movieDetails,
             builder: (context, movieDetails, child) => CustomScrollView(
             slivers: <Widget>[
               SliverAppBarView(
@@ -44,7 +44,7 @@ class MovieDetailsPage extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         MovieDetailTextView(
-                          text: movieDetails.title ?? "",
+                          text: movieDetails?.title ?? "",
                           fontSize: FONT_SIZE_25,
                           fontWeight: FontWeight.bold,
                         ),
@@ -54,7 +54,7 @@ class MovieDetailsPage extends StatelessWidget {
                         Row(
                           children: [
                             MovieDetailTextView(
-                              text: movieDetails.getRunTimeAsString(),
+                              text: movieDetails?.getRunTimeAsString() ?? "",
                               color: DETAIL_SUMMARY_TEXT_COLOR,
                             ),
                             SizedBox(
@@ -69,14 +69,14 @@ class MovieDetailsPage extends StatelessWidget {
                             MovieDetailTextView(
                               fontSize: DETAIL_SUMMARY_TEXT_SIZE,
                               color: DETAIL_SUMMARY_TEXT_COLOR,
-                              text: "Imdb ${movieDetails.voteAverage.toString()}",
+                              text: "Imdb ${movieDetails?.voteAverage.toString()}",
                             ),
                           ],
                         ),
                         SizedBox(
                           height: SIZED_BOX_HEIGHT_10,
                         ),
-                        GenreSectionView(genreList: movieDetails.getGenreListAsStringList()),
+                        GenreSectionView(genreList: movieDetails?.getGenreListAsStringList() ?? []),
                         SizedBox(
                           height: SIZED_BOX_HEIGHT_20,
                         ),
@@ -91,7 +91,7 @@ class MovieDetailsPage extends StatelessWidget {
                         Container(
                           margin: EdgeInsets.only(right: MARGIN_16),
                           child: MovieDetailTextView(
-                            text: movieDetails.overview ?? "",
+                            text: movieDetails?.overview ?? "",
                             color: DETAIL_SUMMARY_TEXT_COLOR,
                           ),
                         ),
@@ -120,12 +120,13 @@ class MovieDetailsPage extends StatelessWidget {
           )
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: Selector<MovieDetailsBloc, MovieVO>(
-            selector: (context, bloc) => bloc.movieDetails!,
+        floatingActionButton: Selector<MovieDetailsBloc, MovieVO?>(
+            selector: (context, bloc) => bloc.movieDetails,
             builder: (context, movieDetails, child) => FloatingButtonView(
             onTapView: () {
               MovieDetailsBloc movieDetailsBloc = Provider.of(context, listen: false);
-            _navigateToChoosingTimePage(context, movieDetailsBloc.movieDetails!);
+              _navigateToChoosingTimePage(context, movieDetailsBloc.movieDetails);
+
             },
             text: 'Get your ticket',
           ),
@@ -134,11 +135,11 @@ class MovieDetailsPage extends StatelessWidget {
     );
   }
 
-  _navigateToChoosingTimePage(BuildContext context, MovieVO movieDetails) {
+  _navigateToChoosingTimePage(BuildContext context, MovieVO? movieDetails) {
       Navigator.push(
           context,
           MaterialPageRoute(builder: (context) =>
-              CinemaDayTimeSlotPage(movieId: movieId, movieTitle: movieTitle, moviePoster: movieDetails.posterPath ?? "",)));
+              CinemaDayTimeSlotPage(movieId: movieId, movieTitle: movieTitle, moviePoster: movieDetails?.posterPath ?? "",)));
   }
 }
 
@@ -201,7 +202,7 @@ class CircleShapeHorizontalListView extends StatelessWidget {
       width: CIRCLE_SHAPE_LIST_VIEW_WIDGET_WIDTH,
       child: Container(
         child: CachedNetworkImage(
-          imageUrl: '$IMAGE_BASE_URL$actorProfilePath',
+          imageUrl: '',
           imageBuilder: (context, imageProvider) => Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,

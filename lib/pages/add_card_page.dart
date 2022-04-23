@@ -44,11 +44,12 @@ class AddCardPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              UserInputForCardView("Card number", "1234.5678.9101.8014", cardNumberTextController),
+              UserInputForCardView(Key("CARD_NUMBER_KEY"), "Card number", "1234.5678.9101.8014", cardNumberTextController),
               SizedBox(
                 height: SIZED_BOX_HEIGHT_20,
               ),
               UserInputForCardView(
+                Key("CARD_HOLDER_KEY"),
                 "Card holder",
                 "Lily Johnson",
                 cardHolderNameTextController,
@@ -65,7 +66,8 @@ class AddCardPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        UserInputForCardView("Expiration date", "08/21", cardExpirationDateTextController),
+                        UserInputForCardView(
+                            Key("EXPIRATION_DATE_KEY"), "Expiration date", "08/21", cardExpirationDateTextController),
                       ],
                     ),
                   ),
@@ -76,7 +78,7 @@ class AddCardPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        UserInputForCardView("CVC", "150", cardCvcTextController),
+                        UserInputForCardView(Key("CVC_KEY"), "CVC", "150", cardCvcTextController),
                       ],
                     ),
                   ),
@@ -110,8 +112,8 @@ class UserInputForCardView extends StatefulWidget {
   final TextInputType textInputType;
   final TextEditingController controller;
 
-  UserInputForCardView(this.label, this.hintText, this.controller,
-      {this.textInputType = TextInputType.number});
+  UserInputForCardView(Key? key, this.label, this.hintText, this.controller,
+      {this.textInputType = TextInputType.number}) : super(key: key);
 
   @override
   State<UserInputForCardView> createState() => _UserInputForCardViewState();
