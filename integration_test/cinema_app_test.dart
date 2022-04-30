@@ -78,13 +78,21 @@ void main() async {
     
     expect(find.byType(HomePage), findsOneWidget);
     expect(find.text(NOW_PLAYING_MOVIE_NAME), findsOneWidget);
+    expect(find.text(NOW_PLAYING_MOVIE_NAME_2), findsOneWidget);
+    await tester.drag(find.byKey(const Key(SCROLL_MOVIE_LIST)), const Offset(0, -140));
     await tester.pumpAndSettle(const Duration(seconds: 2));
+    expect(find.text(COMING_SOON_MOVIE), findsOneWidget);
+    expect(find.text(COMING_SOON_MOVIE_2), findsOneWidget);
+    await tester.pumpAndSettle(const Duration(seconds: 3));
     await tester.tap(find.text(NOW_PLAYING_MOVIE_NAME));
-    await tester.pumpAndSettle(const Duration(seconds: 2));
+    await tester.pumpAndSettle(const Duration(seconds: 3));
 
     expect(find.byType(MovieDetailsPage), findsOneWidget);
+    expect(find.text(NOW_PLAYING_MOVIE_NAME), findsOneWidget);
     expect(find.text(RUN_TIME), findsOneWidget);
     expect(find.text(RATING), findsOneWidget);
+    expect(find.text(GENRE_ACTION), findsOneWidget);
+    expect(find.text(GENRE_THRILLER), findsOneWidget);
     await tester.tap(find.text(GET_YOUR_TICKET));
     await tester.pumpAndSettle(const Duration(seconds: 2));
 
@@ -114,7 +122,7 @@ void main() async {
     await tester.pumpAndSettle(const Duration(seconds: 2));
     await tester.tap(find.byKey(const Key(CARROTS_PRESS_1_KEY)));
     await tester.pumpAndSettle(const Duration(seconds: 2));
-    await tester.tap(find.byKey(const Key(CARROTS_PRESS_DECREASE_KEY)));
+    //await tester.tap(find.byKey(const Key(CARROTS_PRESS_DECREASE_KEY)));
     await tester.pumpAndSettle(const Duration(seconds: 2));
     expect(find.text(SUB_TOTAL), findsOneWidget);
     await tester.drag(find.byKey(const Key(SCROLL_PAYMENT_KEY)), const Offset(0, -100));
@@ -125,8 +133,11 @@ void main() async {
     await tester.pumpAndSettle(const Duration(seconds: 3));
 
     expect(find.byType(PaymentPage), findsOneWidget);
-    await tester.tap(find.text(ADD_NEW_CARD));
     await tester.pumpAndSettle(const Duration(seconds: 3));
+
+    expect(find.text(PAYMENT_AMOUNT), findsOneWidget);
+    await tester.tap(find.text(ADD_NEW_CARD));
+    await tester.pumpAndSettle(const Duration(seconds: 2));
 
     expect(find.byType(AddCardPage), findsOneWidget);
     await tester.enterText(find.byKey(const Key(CARD_NUMBER_KEY)), CARD_NUMBER);
@@ -136,14 +147,40 @@ void main() async {
     await tester.tap(find.text(CONFIRM));
     await tester.pumpAndSettle(const Duration(seconds: 3));
 
-    expect(find.byType(PaymentPage), findsOneWidget);
-    await tester.tap(find.text(PURCHASE));
+    await tester.enterText(find.byKey(const Key(CARD_NUMBER_KEY)),
+        CARD_NUMBER);
+    await tester.enterText(find.byKey(const Key(CARD_HOLDER_KEY)),
+        CARD_HOLDER);
+    await tester.enterText(
+        find.byKey(const Key(EXPIRATION_DATE_KEY)),
+        EXPIRATION_DATE);
+    await tester.enterText(
+        find.byKey(const Key(CVC_KEY)), CVC);
     await tester.pumpAndSettle(const Duration(seconds: 3));
+
+    expect(find.byType(PaymentPage), findsOneWidget);
+    await tester.pumpAndSettle(const Duration(seconds: 3));
+    expect(find.text(CARD_NUMBER), findsOneWidget);
+    expect(find.text(CARD_HOLDER), findsOneWidget);
+
+    await tester.tap(find.text(PURCHASE));
+    await tester.pumpAndSettle(const Duration(seconds: 5));
     
     expect(find.byType(TicketPage), findsOneWidget);
+    await tester.pumpAndSettle(const Duration(seconds: 5));
+
+    expect(find.text(AWESOME), findsOneWidget);
+    expect(find.text(THIS_IS_YOUR_TICKET), findsOneWidget);
+    expect(find.text(MOVIE_NAME), findsOneWidget);
+    expect(find.text(SHOW_TIME_DATE), findsOneWidget);
     expect(find.text(ROW), findsWidgets);
+    expect(find.text(SEAT), findsOneWidget);
     expect(find.text(PRICE), findsWidgets);
-    await tester.pumpAndSettle(const Duration(seconds: 3));
+
+    await tester.tap(find.byKey(const Key(TICKET_PAGE_EXIT)));
+    await tester.pumpAndSettle(const Duration(seconds: 5));
+    expect(find.byType(HomePage), findsOneWidget);
+    await tester.pumpAndSettle(const Duration(seconds: 5));
 
   });
 }

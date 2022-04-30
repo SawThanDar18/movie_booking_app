@@ -109,6 +109,7 @@ class HomePage extends StatelessWidget {
               Container(
                 height: HOME_PAGE_SCROLL_CONTAINER_HEIGHT,
                 child: SingleChildScrollView(
+                  key: Key("SCROLL_MOVIE_LIST"),
                   child: Column(
                     children: [
                       Selector<HomeBloc, List<MovieVO>?>(

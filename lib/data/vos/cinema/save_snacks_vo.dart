@@ -17,5 +17,19 @@ class SaveSnacksVO {
 
   Map<String, dynamic> toJson() => _$SaveSnacksVOToJson(this);
 
+  @override
+  String toString() {
+    return 'SaveSnacksVO{id: $id, quantity: $quantity}';
+  }
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SaveSnacksVO &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          quantity == other.quantity;
+
+  @override
+  int get hashCode => id.hashCode ^ quantity.hashCode;
 }

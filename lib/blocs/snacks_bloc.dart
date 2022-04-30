@@ -18,7 +18,10 @@ class SnacksBloc extends ChangeNotifier {
 
   List<SnacksVO> boughtSnacks = [];
 
-  SnacksBloc(double subTotal) {
+  SnacksBloc(double subTotal, [CinemaModel? mCinemaModel]) {
+    if (mCinemaModel != null) {
+      cinemaModel = mCinemaModel;
+    }
     cinemaModel.getSnacksFromDatabase().listen((snacksList) {
         snacks = snacksList;
         this.subTotal = subTotal;

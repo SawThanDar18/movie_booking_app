@@ -19,7 +19,11 @@ class HomeBloc extends ChangeNotifier{
 
   List<UserVO>? users;
 
-  HomeBloc() {
+  HomeBloc([CinemaModel? mCinemaModel]) {
+
+    if (mCinemaModel != null) {
+      cinemaModel = mCinemaModel;
+    }
 
     cinemaModel.getUsersFromDatabase().listen((user) {
       users = user;

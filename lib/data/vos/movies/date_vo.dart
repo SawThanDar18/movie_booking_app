@@ -22,4 +22,19 @@ class DateVO {
 
   Map<String, dynamic> toJson() => _$DateVOToJson(this);
 
+  @override
+  String toString() {
+    return 'DateVO{maximum: $maximum, minimum: $minimum}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DateVO &&
+          runtimeType == other.runtimeType &&
+          maximum == other.maximum &&
+          minimum == other.minimum;
+
+  @override
+  int get hashCode => maximum.hashCode ^ minimum.hashCode;
 }

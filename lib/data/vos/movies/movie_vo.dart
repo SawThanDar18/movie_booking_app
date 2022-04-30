@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:movie_booking_app/data/vos/movies/collection_vo.dart';
@@ -177,4 +178,69 @@ class MovieVO {
   String toString() {
     return 'MovieVO{adult: $adult, backdropPath: $backdropPath, genreIds: $genreIds, id: $id, originalLanguage: $originalLanguage, originalTitle: $originalTitle, overview: $overview, popularity: $popularity, posterPath: $posterPath, releaseDate: $releaseDate, title: $title, video: $video, voteAverage: $voteAverage, voteCount: $voteCount, belongsToCollection: $belongsToCollection, budget: $budget, genres: $genres, homePage: $homePage, imdbId: $imdbId, productionCompanies: $productionCompanies, productionCountries: $productionCountries, revenue: $revenue, runtime: $runtime, spokenLanguages: $spokenLanguages, status: $status, tagline: $tagline, isNowPlaying: $isNowPlaying, isComingSoon: $isComingSoon}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MovieVO &&
+          runtimeType == other.runtimeType &&
+          adult == other.adult &&
+          backdropPath == other.backdropPath &&
+          listEquals(other.genreIds, genreIds) &&
+          id == other.id &&
+          originalLanguage == other.originalLanguage &&
+          originalTitle == other.originalTitle &&
+          overview == other.overview &&
+          popularity == other.popularity &&
+          posterPath == other.posterPath &&
+          releaseDate == other.releaseDate &&
+          title == other.title &&
+          video == other.video &&
+          voteAverage == other.voteAverage &&
+          voteCount == other.voteCount &&
+          belongsToCollection == other.belongsToCollection &&
+          budget == other.budget &&
+          listEquals(other.genres, genres) &&
+          homePage == other.homePage &&
+          imdbId == other.imdbId &&
+          listEquals(other.productionCompanies, productionCompanies) &&
+          listEquals(other.productionCountries, productionCountries) &&
+          revenue == other.revenue &&
+          runtime == other.runtime &&
+          listEquals(other.spokenLanguages, spokenLanguages) &&
+          status == other.status &&
+          tagline == other.tagline &&
+          isNowPlaying == other.isNowPlaying &&
+          isComingSoon == other.isComingSoon;
+
+  @override
+  int get hashCode =>
+      adult.hashCode ^
+      backdropPath.hashCode ^
+      genreIds.hashCode ^
+      id.hashCode ^
+      originalLanguage.hashCode ^
+      originalTitle.hashCode ^
+      overview.hashCode ^
+      popularity.hashCode ^
+      posterPath.hashCode ^
+      releaseDate.hashCode ^
+      title.hashCode ^
+      video.hashCode ^
+      voteAverage.hashCode ^
+      voteCount.hashCode ^
+      belongsToCollection.hashCode ^
+      budget.hashCode ^
+      genres.hashCode ^
+      homePage.hashCode ^
+      imdbId.hashCode ^
+      productionCompanies.hashCode ^
+      productionCountries.hashCode ^
+      revenue.hashCode ^
+      runtime.hashCode ^
+      spokenLanguages.hashCode ^
+      status.hashCode ^
+      tagline.hashCode ^
+      isNowPlaying.hashCode ^
+      isComingSoon.hashCode;
 }

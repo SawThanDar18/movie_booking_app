@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:movie_booking_app/data/vos/cinema/time_slots_vo.dart';
@@ -27,4 +28,21 @@ class DayTimeSlotsVO {
 
   Map<String, dynamic> toJson() => _$DayTimeSlotsVOToJson(this);
 
+  @override
+  String toString() {
+    return 'DayTimeSlotsVO{cinemaId: $cinemaId, cinemaName: $cinemaName, timeSlots: $timeSlots}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DayTimeSlotsVO &&
+          runtimeType == other.runtimeType &&
+          cinemaId == other.cinemaId &&
+          cinemaName == other.cinemaName &&
+          listEquals(other.timeSlots, timeSlots);
+
+  @override
+  int get hashCode =>
+      cinemaId.hashCode ^ cinemaName.hashCode ^ timeSlots.hashCode;
 }

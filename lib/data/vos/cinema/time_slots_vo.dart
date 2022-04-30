@@ -25,4 +25,21 @@ class TimeSlotsVO {
 
   Map<String, dynamic> toJson() => _$TimeSlotsVOToJson(this);
 
+  @override
+  String toString() {
+    return 'TimeSlotsVO{dayTimeSlotsId: $dayTimeSlotsId, startTime: $startTime, isSelected: $isSelected}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TimeSlotsVO &&
+          runtimeType == other.runtimeType &&
+          dayTimeSlotsId == other.dayTimeSlotsId &&
+          startTime == other.startTime &&
+          isSelected == other.isSelected;
+
+  @override
+  int get hashCode =>
+      dayTimeSlotsId.hashCode ^ startTime.hashCode ^ isSelected.hashCode;
 }

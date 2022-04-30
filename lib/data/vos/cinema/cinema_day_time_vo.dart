@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:movie_booking_app/data/vos/cinema/day_time_slots_vo.dart';
 import 'package:movie_booking_app/persistence/hive_constants.dart';
@@ -16,4 +17,14 @@ class CinemaDayTimeVO {
   String toString() {
     return 'CinemaDayTimeVO{cinemaDayTimeList: $cinemaDayTimeList}';
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CinemaDayTimeVO &&
+          runtimeType == other.runtimeType &&
+          listEquals(other.cinemaDayTimeList, cinemaDayTimeList);
+
+  @override
+  int get hashCode => cinemaDayTimeList.hashCode;
 }

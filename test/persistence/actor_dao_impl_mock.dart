@@ -1,12 +1,14 @@
 import 'package:movie_booking_app/data/vos/movies/actor_vo.dart';
 import 'package:movie_booking_app/persistence/daos/actor_dao.dart';
 
+import '../mock_data/mock_data.dart';
+
 class ActorDaoImplMock extends ActorDao {
   Map<int, ActorVO> actorListFromDatabaseMock = {};
 
   @override
   Stream<List<ActorVO>> getActorStream() {
-    return Stream.value(actorListFromDatabaseMock.values.toList());
+    return Stream.value(getMockActors().first);
   }
 
   @override
@@ -21,7 +23,7 @@ class ActorDaoImplMock extends ActorDao {
 
   @override
   Stream<void> getAllActorsEventStream() {
-    return Stream<void>.value(null);
+    return Stream.value(null);
   }
 
   @override

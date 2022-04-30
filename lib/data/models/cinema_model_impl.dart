@@ -19,6 +19,12 @@ import 'package:movie_booking_app/persistence/daos/cinema_day_time_dao.dart';
 import 'package:movie_booking_app/persistence/daos/genre_dao.dart';
 import 'package:movie_booking_app/persistence/daos/impl/actor_dao_impl.dart';
 import 'package:movie_booking_app/persistence/daos/impl/card_dao_impl.dart';
+import 'package:movie_booking_app/persistence/daos/impl/cinema_day_time_dao_impl.dart';
+import 'package:movie_booking_app/persistence/daos/impl/genre_dao_impl.dart';
+import 'package:movie_booking_app/persistence/daos/impl/movie_dao_impl.dart';
+import 'package:movie_booking_app/persistence/daos/impl/payment_dao_impl.dart';
+import 'package:movie_booking_app/persistence/daos/impl/snacks_dao_impl.dart';
+import 'package:movie_booking_app/persistence/daos/impl/user_dao_impl.dart';
 import 'package:movie_booking_app/persistence/daos/movie_dao.dart';
 import 'package:movie_booking_app/persistence/daos/payment_dao.dart';
 import 'package:movie_booking_app/persistence/daos/snacks_dao.dart';
@@ -37,23 +43,22 @@ class CinemaModelImpl extends CinemaModel {
   CinemaDataAgent _dataAgent = RetrofitCinemaDataAgentImpl();
 
   ActorDao actorDao = ActorDaoImpl();
-  UserDao userDao = UserDao();
   CardDao cardDao = CardDaoImpl();
-  CinemaDayTimeDao cinemaDayTimeDao = CinemaDayTimeDao();
-  MovieDao movieDao = MovieDao();
-  PaymentDao paymentDao = PaymentDao();
-  SnacksDao snacksDao = SnacksDao();
+  CinemaDayTimeDao cinemaDayTimeDao = CinemaDayTimeDaoImpl();
+  GenreDao genreDao = GenreDaoImpl();
+  MovieDao movieDao = MovieDaoImpl();
+  PaymentDao paymentDao = PaymentDaoImpl();
+  SnacksDao snacksDao = SnacksDaoImpl();
+  UserDao userDao = UserDaoImpl();
 
-  GenreDao genreDao = GenreDao();
-
-  void setDaosAndDataAgents(ActorDao actorDao, UserDao userDao, CardDao cardDao, CinemaDayTimeDao cinemaDayTimeDao, MovieDao movieDao, PaymentDao paymentDao, SnacksDao snacksDao, CinemaDataAgent cinemaDataAgent) {
+  void setDaosAndDataAgents(ActorDao actorDao, CardDao cardDao, CinemaDayTimeDao cinemaDayTimeDao, MovieDao movieDao, PaymentDao paymentDao, SnacksDao snacksDao, UserDao userDao, CinemaDataAgent cinemaDataAgent) {
     this.actorDao = actorDao;
-    this.userDao = userDao;
     this.cardDao = cardDao;
     this.cinemaDayTimeDao = cinemaDayTimeDao;
     this.movieDao = movieDao;
     this.paymentDao = paymentDao;
     this.snacksDao = snacksDao;
+    this.userDao = userDao;
     this._dataAgent = cinemaDataAgent;
   }
 

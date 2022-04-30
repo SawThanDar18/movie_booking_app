@@ -18,7 +18,10 @@ class SeatingBloc extends ChangeNotifier {
   String chooseSeatRow = "";
   String chooseSeatName = "";
 
-  SeatingBloc(int timeSlotId, String choosingDate) {
+  SeatingBloc(int timeSlotId, String choosingDate, [CinemaModel? mCinemaModel]) {
+    if (mCinemaModel != null) {
+      cinemaModel = mCinemaModel;
+    }
     cinemaModel.getCinemaSeatingPlan(timeSlotId, choosingDate).then((value) {
       movieSeats = value?[0] as List<SeatsVO>;
       columnCountInRow = value?[1] as int;

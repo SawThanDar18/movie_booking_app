@@ -24,7 +24,10 @@ class DayTimeSlotsBloc extends ChangeNotifier{
     return DateVO(DateFormat('yyyy-MM-dd').format(dateTime), DateFormat('EEEE').format(dateTime), false);
   }).toList();
 
-  DayTimeSlotsBloc(int movieId) {
+  DayTimeSlotsBloc(movieId,[CinemaModel? mCinemaModel]) {
+    if (mCinemaModel != null) {
+      cinemaModel = mCinemaModel;
+    }
 
     datesList.first.isSelected = true;
     _getCinemaDayTimeSlots(movieId, getSelectedDate());

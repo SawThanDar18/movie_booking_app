@@ -11,7 +11,10 @@ class MovieDetailsBloc extends ChangeNotifier{
   MovieVO? movieDetails;
   List<ActorVO>? cast;
 
-  MovieDetailsBloc(int movieId) {
+  MovieDetailsBloc(int movieId, [CinemaModel? mCinemaModel]) {
+    if (mCinemaModel != null) {
+      cinemaModel = mCinemaModel;
+    }
 
     cinemaModel.getMovieDetailsFromDatabase(movieId).listen((event) {
       movieDetails = event;

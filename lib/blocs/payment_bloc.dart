@@ -17,7 +17,10 @@ class PaymentBloc extends ChangeNotifier {
 
   UserBookingVO? userBooking;
 
-  PaymentBloc() {
+  PaymentBloc([CinemaModel? mCinemaModel]) {
+    if (mCinemaModel != null) {
+      cinemaModel = mCinemaModel;
+    }
     getCards();
   }
 
@@ -29,7 +32,7 @@ class PaymentBloc extends ChangeNotifier {
   }
 
   void carouselSliderChange(int cardIndex) {
-    chooseCard = cards?[cardIndex];
+      chooseCard = cards?.first;
   }
   
   Future<UserBookingVO> checkout(

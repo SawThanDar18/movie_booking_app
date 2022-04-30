@@ -35,6 +35,7 @@ class TicketPage extends StatelessWidget {
               Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
             },
             child: Container(
+              key: Key("TICKET_PAGE_EXIT"),
               margin: EdgeInsets.only(top: MARGIN_20, left: MARGIN_20),
               child: Icon(
                 Icons.clear,
