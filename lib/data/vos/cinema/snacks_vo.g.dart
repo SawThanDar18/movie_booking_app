@@ -22,13 +22,14 @@ class SnacksVOAdapter extends TypeAdapter<SnacksVO> {
       fields[2] as String?,
       fields[3] as int?,
       fields[4] as String?,
+      fields[5] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, SnacksVO obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class SnacksVOAdapter extends TypeAdapter<SnacksVO> {
       ..writeByte(3)
       ..write(obj.snackPrice)
       ..writeByte(4)
-      ..write(obj.snackImage);
+      ..write(obj.snackImage)
+      ..writeByte(5)
+      ..write(obj.quantity);
   }
 
   @override
@@ -62,7 +65,8 @@ SnacksVO _$SnacksVOFromJson(Map<String, dynamic> json) => SnacksVO(
       json['description'] as String?,
       json['price'] as int?,
       json['image'] as String?,
-    )..quantity = json['quantity'] as int?;
+      json['quantity'] as int?,
+    );
 
 Map<String, dynamic> _$SnacksVOToJson(SnacksVO instance) => <String, dynamic>{
       'id': instance.id,

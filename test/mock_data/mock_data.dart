@@ -160,13 +160,6 @@ List<UserVO> getMockProfile() {
           '08/23',
           'JCB',
         ),
-        CardVO(
-          3,
-          'JC',
-          '1234567890123',
-          '08/23',
-          'JCB',
-        ),
       ],
       '5122|I1wOPuUGKiB1UhyiYR5Ep80LgYQzOpnlwOe3vJqz',
     ),
@@ -226,6 +219,17 @@ List<List<SeatsVO>>? getMockMovieSeatList() {
   ];
 }
 
+List<SeatsVO> getMockMovieSeatingList(){
+  return [
+    SeatsVO(1, SEAT_TYPE_AVAILABLE, 'A1', 'A', 5, false),
+    SeatsVO(2, SEAT_TYPE_AVAILABLE, 'A2', 'A', 5, false),
+    SeatsVO(3, SEAT_TYPE_AVAILABLE, 'A3', 'A', 5, false),
+    SeatsVO(4, SEAT_TYPE_AVAILABLE, 'B1', 'B', 6, false),
+    SeatsVO(5, SEAT_TYPE_AVAILABLE, 'B2', 'B', 6, false),
+    SeatsVO(6, SEAT_TYPE_AVAILABLE, 'B3', 'B', 6, false)
+  ];
+}
+
 List<PaymentVO> getMockPaymentMethodList() {
   return [
     PaymentVO(1, 'Credit Card', 'VISA, JCB'),
@@ -242,6 +246,7 @@ List<SnacksVO> getMockSnackList() {
       'Snack Description',
       2,
       null,
+      1
     ),
     SnacksVO(
       2,
@@ -249,6 +254,7 @@ List<SnacksVO> getMockSnackList() {
       'Snack Description',
       3,
       null,
+        1
     ),
     SnacksVO(
       3,
@@ -256,12 +262,25 @@ List<SnacksVO> getMockSnackList() {
       'Snack Description',
       4,
       null,
+        1
     ),
   ];
 }
 
+CheckOutVO getMockCheckOutVO() {
+  return CheckOutVO(6, 'E',
+      'E-1,E-2', '2022-04-30', 17.0, 294793, 2, 2, [ SnacksVO(
+        2,
+        'Smoothies',
+        'Snack Description',
+        3,
+        null,
+          1
+      ),]);
+}
+
 UserBookingVO getMockCheckOut() {
-  return UserBookingVO(
+ return UserBookingVO(
     720,
     'Cinema II-1234-5678',
     '2022-04-30',
@@ -280,6 +299,7 @@ UserBookingVO getMockCheckOut() {
         'Snack Description',
         3,
         null,
+          1
       ),
     ],
     "",

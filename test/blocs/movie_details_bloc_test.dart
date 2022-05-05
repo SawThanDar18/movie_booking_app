@@ -19,6 +19,5 @@ void main() {
     test('Actors', (){
       expect(detailsBloc?.cast, getMockActors().first);
     });
-    //
   });
 }

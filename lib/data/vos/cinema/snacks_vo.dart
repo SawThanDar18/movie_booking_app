@@ -28,10 +28,11 @@ class SnacksVO {
   @HiveField(4)
   String? snackImage;
 
+  @HiveField(5)
   int? quantity;
 
   SnacksVO(this.id, this.snackName, this.snackDetail, this.snackPrice,
-      this.snackImage);
+      this.snackImage, this.quantity);
 
   factory SnacksVO.fromJson(Map<String, dynamic> json) => _$SnacksVOFromJson(json);
 

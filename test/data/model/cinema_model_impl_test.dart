@@ -71,36 +71,36 @@ void main() {
       expect(
         movieModel.getComingSoonMoviesFromDatabase(),
         emits([
-        MovieVO(
-        false,
-        ' /cTTggc927lEPCMsWUsdugSj6wAY.jpg',
-        [28, 12],
-        335787,
-        'en',
-        'The Longest Day',
-        'World War II movie based on Normandy Landing',
-        677.833,
-        '/sqLowacltbZLoCa4KYye64RvvdQ.jpg',
-        '1952-02-10',
-        'The Longest Day',
-        false,
-        7.1,
-        903,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        false,
-        true,
-        ),
+          MovieVO(
+            false,
+            ' /cTTggc927lEPCMsWUsdugSj6wAY.jpg',
+            [28, 12],
+            335787,
+            'en',
+            'The Longest Day',
+            'World War II movie based on Normandy Landing',
+            677.833,
+            '/sqLowacltbZLoCa4KYye64RvvdQ.jpg',
+            '1952-02-10',
+            'The Longest Day',
+            false,
+            7.1,
+            903,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            true,
+          ),
         ]),
       );
     });
@@ -146,20 +146,6 @@ void main() {
       );
     });
 
-    /*test('Cinema Seating Plan Test', () {
-      expect(
-        movieModel.getCinemaSeatingPlan(1, '2022-04-30'),
-        completion(
-          equals(
-            getMockMovieSeatList()?.expand((seat) => seat).toList().map((seat) {
-              seat.isSelected = false;
-              return seat;
-            }).toList(),
-          ),
-        ),
-      );
-    });*/
-
     test('SnackList From Database Test', () {
       expect(
         movieModel.getSnacksFromDatabase(),
@@ -189,15 +175,10 @@ void main() {
 
     test('CheckOut Test', () {
       expect(
-        movieModel.checkOut(CheckOutVO(2, 'E',
-            'E-1,E-2', '2022-04-30', 17, 294793, 2, 2, [
-              SnacksVO(
-              2,
-              'Smoothies',
-              'Snack Description',
-              3,
-              null,
-            ),])),
+        movieModel.checkOut(
+            CheckOutVO(2, 'E', 'E-1,E-2', '2022-04-30', 17, 294793, 2, 2, [
+          SnacksVO(2, 'Smoothies', 'Snack Description', 3, null, 1),
+        ])),
         completion(
           equals(getMockCheckOut()),
         ),
@@ -212,6 +193,19 @@ void main() {
         ),
       );
     });
-
   });
 }
+
+/*test('Cinema Seating Plan Test', () {
+      expect(
+        movieModel.getCinemaSeatingPlan(1, '2022-04-30'),
+        completion(
+          equals(
+            getMockMovieSeatList()?.expand((seat) => seat).toList().map((seat) {
+              seat.isSelected = false;
+              return seat;
+            }).toList(),
+          ),
+        ),
+      );
+    });*/

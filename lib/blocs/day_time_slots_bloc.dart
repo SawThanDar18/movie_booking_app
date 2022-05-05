@@ -30,7 +30,7 @@ class DayTimeSlotsBloc extends ChangeNotifier{
     }
 
     datesList.first.isSelected = true;
-    _getCinemaDayTimeSlots(movieId, getSelectedDate());
+    getCinemaDayTimeSlots(movieId, getSelectedDate());
   }
 
   String getSelectedDate() {
@@ -51,7 +51,7 @@ class DayTimeSlotsBloc extends ChangeNotifier{
       }).toList();
 
     datesList[index].isSelected = true;
-    _getCinemaDayTimeSlots(movieId, getSelectedDate());
+    getCinemaDayTimeSlots(movieId, getSelectedDate());
   }
 
   void onTapTimeSlots(int timeSlotId, String time, String cinemaName, int cinemaId) {
@@ -71,7 +71,7 @@ class DayTimeSlotsBloc extends ChangeNotifier{
     notifyListeners();
   }
 
-  _getCinemaDayTimeSlots(int movieId, String date) {
+  getCinemaDayTimeSlots(int movieId, String date) {
 
     cinemaModel.getCinemaDayTimeSlotsFromDatabase(movieId, date).listen((cinemaDayTimeSlots) {
         dayTimeSlots = cinemaDayTimeSlots;

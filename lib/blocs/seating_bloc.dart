@@ -61,4 +61,5 @@ class SeatingBloc extends ChangeNotifier {
       notifyListeners();
     }
   }
+
 }

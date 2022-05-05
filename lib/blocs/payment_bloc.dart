@@ -5,6 +5,7 @@ import 'package:movie_booking_app/data/vos/cinema/checkout_vo.dart';
 import 'package:movie_booking_app/data/vos/cinema/snacks_vo.dart';
 import 'package:movie_booking_app/data/vos/cinema/user_booking_vo.dart';
 import 'package:movie_booking_app/data/vos/users/card_vo.dart';
+import 'package:movie_booking_app/data/vos/users/user_vo.dart';
 
 class PaymentBloc extends ChangeNotifier {
 
@@ -12,6 +13,7 @@ class PaymentBloc extends ChangeNotifier {
 
   List<CardVO>? cards;
   CardVO? chooseCard;
+  UserVO? profile;
 
   int cardIndex = 0;
 
@@ -21,6 +23,14 @@ class PaymentBloc extends ChangeNotifier {
     if (mCinemaModel != null) {
       cinemaModel = mCinemaModel;
     }
+
+    cinemaModel.getProfile();
+
+    cinemaModel.getUsersFromDatabase().listen((profileList) {
+      profile = profileList.first;
+      notifyListeners();
+    }).onError((error) => print(error));
+
     getCards();
   }
 
@@ -31,8 +41,9 @@ class PaymentBloc extends ChangeNotifier {
     }).onError((error) => debugPrint(error.toString()));
   }
 
-  void carouselSliderChange(int cardIndex) {
-      chooseCard = cards?.first;
+  void carouselSliderChange(int cardIndex) async {
+      chooseCard = cards?[cardIndex];
+      notifyListeners();
   }
   
   Future<UserBookingVO> checkout(

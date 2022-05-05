@@ -14,7 +14,7 @@ void main() {
     });
 
     test('Profile Test', (){
-      expect(homeBloc?.users, getMockProfile());
+      expect(homeBloc?.users?.contains(getMockProfile().first), true);
     });
 
     test('Now playing movies Test', () {
