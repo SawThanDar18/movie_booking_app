@@ -18,10 +18,23 @@ class SeatingBloc extends ChangeNotifier {
   String chooseSeatRow = "";
   String chooseSeatName = "";
 
+  List<SeatsVO>? seatingList;
+
+  List<String>? selectedSeat;
+  double price = 0;
+  Set<String>? selectedRow;
+
+  List<String>? tempSelectedRowAsList;
+
   SeatingBloc(int timeSlotId, String choosingDate, [CinemaModel? mCinemaModel]) {
     if (mCinemaModel != null) {
       cinemaModel = mCinemaModel;
     }
+
+    selectedSeat = [];
+    price = 0;
+    selectedRow = {};
+
     cinemaModel.getCinemaSeatingPlan(timeSlotId, choosingDate).then((value) {
       movieSeats = value?[0] as List<SeatsVO>;
       columnCountInRow = value?[1] as int;
@@ -29,6 +42,63 @@ class SeatingBloc extends ChangeNotifier {
     }).catchError((error) {
       debugPrint(error.toString());
     });
+  }
+
+  void selectSeat(SeatsVO? seat) {
+    SeatsVO? tempSelectedSeat = movieSeats?.firstWhere((seatFromList) => seatFromList.id == seat?.id && seatFromList.seatName == seat?.seatName);
+
+    List<SeatsVO> tempSeatingList = movieSeats?.map((seat) => seat).toList() ?? [];
+    List<String> tempSelectedSeatList = seats.map((seatName) => seatName).toList();
+    List<String> tempSelectedRow = tempSelectedRowAsList ?? [];
+
+    if (tempSelectedSeat?.isSelected == true) {
+      tempSeatingList
+          .firstWhere((seatFromList) => seatFromList == tempSelectedSeat)
+          .isSelected = false;
+      tempSelectedSeatList.remove(seat?.seatName);
+      tempSelectedRow.remove(seat?.symbol);
+
+      movieSeats = tempSeatingList;
+      seats = tempSelectedSeatList;
+      tempSelectedRowAsList = tempSelectedRow;
+
+      totalPrice -= seat?.price ?? 0;
+    } else {
+      if (tempSelectedSeat?.type == SEAT_TYPE_AVAILABLE) {
+        tempSeatingList
+            .firstWhere((seatFromList) => seatFromList == tempSelectedSeat)
+            .isSelected = true;
+
+        tempSelectedSeatList.add(seat?.seatName ?? '');
+        tempSelectedRow.add(seat?.symbol ?? '');
+
+        movieSeats = tempSeatingList;
+        seats = tempSelectedSeatList;
+        tempSelectedRowAsList = tempSelectedRow;
+
+        totalPrice += seat?.price ?? 0;
+      }
+    }
+    notifyListeners();
+  }
+
+  int getSeatColumnCount() {
+    String tempSymbol = seatingList?[0].symbol ?? 'A';
+    int numberOfColumn = seatingList
+        ?.where((seat) => seat.symbol == tempSymbol)
+        .toList()
+        .length ??
+        1;
+    return numberOfColumn;
+  }
+
+  String getSelectedRowAsFormattedString() {
+    selectedRow = tempSelectedRowAsList?.toSet();
+    return selectedRow?.toList().join(',') ?? '';
+  }
+
+  String getSelectedSeatAsFormattedString() {
+    return selectedSeat?.toList().join(',') ?? '';
   }
 
   void onTapSeat(SeatsVO? seat) {

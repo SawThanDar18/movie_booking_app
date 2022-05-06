@@ -19,21 +19,39 @@ void main(){
       expect(seatingBloc?.movieSeats, getMockMovieSeatingList());
     });
 
-    test('Select And Unselect Seat', () {
-      seatingBloc?.onTapSeat(getMockMovieSeatList()?.first.first);
+    test('Select and Remove Seat Test', () {
+      seatingBloc?.selectSeat(getMockMovieSeatList()?.first.first);
       expect(seatingBloc?.movieSeats?.first.isSelected, true);
-      expect(seatingBloc?.seats.first, [seatingBloc?.movieSeats?.first.seatName]);
-      expect(seatingBloc?.chooseSeatRow, seatingBloc?.movieSeats?.first.seatName);
-      expect(seatingBloc?.totalPrice, 6);
+      expect(seatingBloc?.seats, [seatingBloc?.movieSeats?.first.seatName]);
+      expect(seatingBloc?.getSelectedRowAsFormattedString(), seatingBloc?.movieSeats?.first.symbol);
+      expect(seatingBloc?.totalPrice, 5);
 
-      seatingBloc?.onTapSeat(getMockMovieSeatList()?.first.last);
-      seatingBloc?.onTapSeat(getMockMovieSeatList()?.first.first);
+      seatingBloc?.selectSeat(getMockMovieSeatList()?.first.last);
+      seatingBloc?.selectSeat(getMockMovieSeatList()?.first.first);
       expect(seatingBloc?.movieSeats?.first.isSelected, false);
       expect(seatingBloc?.seats, [seatingBloc?.movieSeats?.last.seatName]);
-      expect(seatingBloc?.chooseSeatRow, seatingBloc?.movieSeats?.last.symbol);
-      expect(seatingBloc?.totalPrice, 6);
+      expect(seatingBloc?.getSelectedRowAsFormattedString(), seatingBloc?.movieSeats?.last.symbol);
+      expect(seatingBloc?.price, 0);
     });
 
   });
 
 }
+
+
+
+/*test('Tap Seat', () {
+      seatingBloc?.onTapSeat(SeatsVO(1, SEAT_TYPE_AVAILABLE, 'A1', 'A', 5, false),);
+      expect(seatingBloc?.movieSeats?.first.isSelected, true);
+      expect(seatingBloc?.tickets, 1);
+      expect(seatingBloc?.chooseSeatName, 'A');
+      expect(seatingBloc?.totalPrice, 5);
+    });
+
+    test('Remove Seat', () {
+      seatingBloc?.onTapSeat(SeatsVO(1, SEAT_TYPE_AVAILABLE, 'A1', 'A', 5, false),);
+      expect(seatingBloc?.movieSeats?.first.isSelected, false);
+      expect(seatingBloc?.tickets, 0);
+      expect(seatingBloc?.seats, []);
+      expect(seatingBloc?.totalPrice, 0);
+    });*/
