@@ -15,7 +15,7 @@ import '../config/config_value.dart';
 import '../config/environment_config.dart';
 import '../data/vos/cinema/user_booking_vo.dart';
 
-class PaymentPage extends StatelessWidget {
+class PaymentPage extends StatefulWidget {
   final String bookingDate;
   final int timeSlotId;
   final String timeSlot;
@@ -43,6 +43,11 @@ class PaymentPage extends StatelessWidget {
       required this.seatName,
       required this.boughtSnacks});
 
+  @override
+  State<PaymentPage> createState() => _PaymentPageState();
+}
+
+class _PaymentPageState extends State<PaymentPage> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -74,7 +79,7 @@ class PaymentPage extends StatelessWidget {
                 height: SIZED_BOX_HEIGHT_10,
               ),
               TextView(
-                "\$ $totalPrice",
+                "\$ ${widget.totalPrice}",
                 Colors.black,
                 FONT_SIZE_25,
                 fontWeight: FontWeight.bold,
@@ -90,6 +95,12 @@ class PaymentPage extends StatelessWidget {
                     onTapCard: (index) {
                       PaymentBloc bloc = Provider.of(context, listen: false);
                       bloc.selectCard(index);
+                      setState(() {
+                        cards?.forEach((each) {
+                          each.isSelected = false;
+                        });
+                        cards?[index].isSelected = true;
+                      });
                     },
                   );
                 },
@@ -109,28 +120,28 @@ class PaymentPage extends StatelessWidget {
             selector: (context, bloc) => bloc.chooseCard,
             builder: (context, chooseCard, child) => FloatingButtonView(
               onTapView: () {
-                print("timeslotId>> $timeSlotId");
-                print("seatRow>>> $seatRow");
-                print("seatName>>> $seatName");
-                print("bookingDate>>> $bookingDate");
-                print("totalPrice>>> $totalPrice");
-                print("movieId>>> $movieId");
+                print("timeslotId>> ${widget.timeSlotId}");
+                print("seatRow>>> ${widget.seatRow}");
+                print("seatName>>> ${widget.seatName}");
+                print("bookingDate>>> ${widget.bookingDate}");
+                print("totalPrice>>> ${widget.totalPrice}");
+                print("movieId>>> ${widget.movieId}");
                 print("cardId>> ${chooseCard?.id}");
-                print("cinemaId>>> $cinemaId");
-                print("boughtSnacks>>> $boughtSnacks");
+                print("cinemaId>>> ${widget.cinemaId}");
+                print("boughtSnacks>>> ${widget.boughtSnacks}");
 
                 PaymentBloc paymentBloc = Provider.of(context, listen: false);
                 paymentBloc
                     .checkout(
-                        timeSlotId,
-                        seatRow,
-                        seatName,
-                        bookingDate,
-                        totalPrice,
-                        movieId,
+                        widget.timeSlotId,
+                        widget.seatRow,
+                        widget.seatName,
+                        widget.bookingDate,
+                        widget.totalPrice,
+                        widget.movieId,
                         chooseCard?.id ?? 0,
-                        cinemaId,
-                        boughtSnacks)
+                        widget.cinemaId,
+                        widget.boughtSnacks)
                     .then((value) {
                   _navigateToTicketsPage(context, value);
                 }).catchError((error) {
@@ -151,9 +162,9 @@ class PaymentPage extends StatelessWidget {
           context,
           MaterialPageRoute(
               builder: (context) => TicketPage(
-                  movieName: movieName,
-                  moviePoster: moviePoster,
-                  cinemaName: cinemaName,
+                  movieName: widget.movieName,
+                  moviePoster: widget.moviePoster,
+                  cinemaName: widget.cinemaName,
                   userBooking: userBookingVO)));
     }
   }
@@ -171,7 +182,6 @@ class PaymentPage extends StatelessWidget {
                   userBooking: paymentBloc.userBooking!)));
     }
   }*/
-
   Future<dynamic> _navigateToAddCardPage(BuildContext context) {
     return Navigator.push(
       context,
@@ -227,7 +237,6 @@ class CardItemView extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         onTapCard(index);
-        print("isSelectCard>> ${cards[index].isSelected}");
       },
       child: Container(
         height: 200,

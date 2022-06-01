@@ -41,41 +41,12 @@ class PaymentBloc extends ChangeNotifier {
     }).onError((error) => debugPrint(error.toString()));
   }
 
-  void carouselSliderChange(int cardIndex) async {
-    chooseCard = cards?[cardIndex];
+  void selectCard(int index) async {
+    chooseCard = cards?[index];
     notifyListeners();
   }
 
-  void selectCard(int index) async {
-    chooseCard = cards?[index];
-
-    /*List<CardVO>? tempForSelect = cards?.toList().mapIndexed((num, element) {
-      if (index == num && element.isSelected == false) {
-        element.isSelected = true;
-      } else if (index == num && element.isSelected == true) {
-        element.isSelected = false;
-      }
-      return element;
-    }).toList();
-    cards = tempForSelect?.toList();
-    notifyListeners();*/
-
-    /*cards?[index].isSelected = true;
-    notifyListeners();*/
-
-    /*List<CardVO>? selectedCard = cards?.toList().map((element) {
-      if (element.isSelected == false) {
-        element.isSelected = true;
-      } else if (element.isSelected == true) {
-        element.isSelected = false;
-      }
-      return element;
-    }).toList();
-    cards = selectedCard?.toList();
-    notifyListeners();*/
-  }
-
-  Future<UserBookingVO> checkout(
+  Future<UserBookingVO?> checkout(
       int timeSlotId,
       String seatRow,
       String seatName,
@@ -91,7 +62,9 @@ class PaymentBloc extends ChangeNotifier {
     return cinemaModel.checkOut(checkOutVO).then((value) {
       userBooking = value;
       notifyListeners();
-      return Future.value(value);
+      return userBooking;
+    }).catchError((error) {
+      debugPrint(error.toString());
     });
   }
 }
