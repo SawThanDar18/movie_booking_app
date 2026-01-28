@@ -7,7 +7,7 @@ import 'package:movie_booking_app/resources/dimens.dart';
 class ChoosingTimeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIOverlays([]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: SPLASH_SCREEN_BACKGROUND_COLOR,

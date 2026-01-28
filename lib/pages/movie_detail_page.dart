@@ -21,7 +21,7 @@ class MovieDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIOverlays([]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     return ChangeNotifierProvider(
       create: (BuildContext context) => MovieDetailsBloc(movieId),
       child: Scaffold(

@@ -23,7 +23,7 @@ class CinemaDayTimeSlotPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIOverlays([]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     return ChangeNotifierProvider(
       create: (BuildContext context) => DayTimeSlotsBloc(movieId) ,
       child: Scaffold(

@@ -11,7 +11,7 @@ import 'package:movie_booking_app/widgets/welcome_text_view.dart';
 class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIOverlays([]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     return Scaffold(
       backgroundColor: SPLASH_SCREEN_BACKGROUND_COLOR,
       body: Center(

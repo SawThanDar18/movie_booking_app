@@ -9,7 +9,7 @@ import 'package:movie_booking_app/widgets/floating_button_view.dart';
 class ChoosingTimePage_2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIOverlays([]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     return Scaffold(
       backgroundColor: Colors.white,
       body: CustomScrollView(
